@@ -65,7 +65,6 @@ void sendLocation()
 
   //wait for end of transmission
   Serial.println(F("wait for the end of transmission"));
-  delay(1000);
   while (!lorawan_has_send())
   {
     gps_loop();
