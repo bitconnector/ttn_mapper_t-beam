@@ -33,5 +33,5 @@ function decodeUplink(input) {
         ptr = ptr + 9;
     }
 
-    return data;
+    return { data } ;
 }
