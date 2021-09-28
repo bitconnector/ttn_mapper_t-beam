@@ -11,9 +11,16 @@ const lmic_pinmap lmic_pins = {
     .dio = {LoRa_DIO0, LoRa_DIO1, LoRa_DIO2},
 };
 
+#ifdef USE_OTAA
+void os_getArtEui (u1_t* buf) { memcpy_P(buf, APPEUI, 8);}
+void os_getDevEui (u1_t* buf) { memcpy_P(buf, DEVEUI, 8);}
+void os_getDevKey (u1_t* buf) {  memcpy_P(buf, APPKEY, 16);}
+#else
 void os_getArtEui(u1_t *buf) {}
 void os_getDevEui(u1_t *buf) {}
 void os_getDevKey(u1_t *buf) {}
+#endif
+
 
 uint8_t *data;
 uint8_t size;
@@ -33,6 +40,7 @@ void startup_lorawan()
     else
     {
 #ifdef PROGMEM
+#ifndef USE_OTAA
         // On AVR, these values are stored in flash and only copied to RAM
         // once. Copy them to a temporary buffer here, LMIC_setSession will
         // copy them into a buffer of its own again.
@@ -41,6 +49,7 @@ void startup_lorawan()
         memcpy_P(appskey, APPSKEY, sizeof(APPSKEY));
         memcpy_P(nwkskey, NWKSKEY, sizeof(NWKSKEY));
         LMIC_setSession(0x1, DEVADDR, nwkskey, appskey);
+#endif
 #else
         // If not running an AVR with PROGMEM, just use the arrays directly
         LMIC_setSession(0x1, DEVADDR, NWKSKEY, APPSKEY);
@@ -115,6 +124,14 @@ void do_send(osjob_t *j)
     }
 }
 
+void printHex2(unsigned v)
+{
+    v &= 0xff;
+    if (v < 16)
+        Serial.print('0');
+    Serial.print(v, HEX);
+}
+
 void onEvent(ev_t ev)
 {
     Serial.print(os_getTime());
@@ -132,6 +149,42 @@ void onEvent(ev_t ev)
         break;
     case EV_BEACON_TRACKED:
         Serial.println(F("EV_BEACON_TRACKED"));
+        break;
+    case EV_JOINING:
+        Serial.println(F("EV_JOINING"));
+        break;
+    case EV_JOINED:
+        Serial.println(F("EV_JOINED"));
+        {
+            u4_t netid = 0;
+            devaddr_t devaddr = 0;
+            u1_t nwkKey[16];
+            u1_t artKey[16];
+            LMIC_getSessionKeys(&netid, &devaddr, nwkKey, artKey);
+            Serial.print("netid: ");
+            Serial.println(netid, DEC);
+            Serial.print("devaddr: ");
+            Serial.println(devaddr, HEX);
+            Serial.print("AppSKey: ");
+            for (size_t i = 0; i < sizeof(artKey); ++i)
+            {
+                if (i != 0)
+                    Serial.print("-");
+                printHex2(artKey[i]);
+            }
+            Serial.println("");
+            Serial.print("NwkSKey: ");
+            for (size_t i = 0; i < sizeof(nwkKey); ++i)
+            {
+                if (i != 0)
+                    Serial.print("-");
+                printHex2(nwkKey[i]);
+            }
+            Serial.println();
+        }
+        // Disable link check validation (automatically enabled
+        // during join, but not supported by TTN at this time).
+        LMIC_setLinkCheckMode(0);
         break;
     case EV_RFU1:
         Serial.println(F("EV_RFU1"));
