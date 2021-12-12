@@ -15,6 +15,7 @@
 
 extern unsigned char Buffer[235];
 extern RTC_DATA_ATTR LoraWANmessage message;
+extern RTC_DATA_ATTR bool joined;
 
 extern bool has_send;
 
