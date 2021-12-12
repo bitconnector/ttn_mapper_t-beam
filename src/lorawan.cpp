@@ -1,7 +1,8 @@
 #include "lorawan.hpp"
 
 unsigned char Buffer[235];
-RTC_DATA_ATTR LoraWANmessage message = LoraWANmessage(Buffer);
+RTC_DATA_ATTR LoraWANmessage message;
+RTC_DATA_ATTR bool joined = 0;
 
 bool has_send = false;
 
@@ -18,8 +19,9 @@ void startup_lorawan()
 
     has_send = 0;
 
-    if (message.frameCounterUp == 0)
+    if (joined == 0)
     {
+        message = LoraWANmessage(Buffer);
         LoraWANactivation otaa = LoraWANactivation(&message);
         otaa.setDevNonce((uint16_t)random(70225));
         otaa.setDevEUI(DEVEUI);
@@ -27,7 +29,6 @@ void startup_lorawan()
         otaa.setAppKey(APPKEY);
 
         Serial.print("Joining");
-        bool joined = 0;
         while (!joined)
         {
             LoRa.begin(868100000);
@@ -84,6 +85,7 @@ void lorawan_send(uint8_t _port, uint8_t *_data, uint8_t _size, bool _confirm)
     // Serial.printf("Sending: %s\n", payload);
 
     message.uplink((char *)_data, _size, _port, _confirm);
+    printPackage((char *)message.data, message.dataLen, 0);
 
     LoRa.beginPacket(); // start packet
     LoRa.write(message.data, message.dataLen);
