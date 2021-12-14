@@ -22,7 +22,7 @@ void sendLocation()
 
   //wait for gps
   Serial.println(F("wait for GPS"));
-  unsigned long time = millis() + 5000;
+  unsigned long time = millis() + 1200;
   while (!gps_valid() && time > millis())
   {
     gps_loop();
