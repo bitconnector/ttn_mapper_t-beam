@@ -19,6 +19,7 @@ void startup_lorawan()
 
     has_send = 0;
 
+#ifdef USE_OTAA
     if (joined == 0)
     {
         message = LoraWANmessage(Buffer);
@@ -62,6 +63,16 @@ void startup_lorawan()
         }
         Serial.println("success!");
     }
+#else
+    if (joined == 0)
+    {
+        message = LoraWANmessage(Buffer);
+        message.setDevAddr(DEVADDR);
+        message.setNwkSKey(NWKSKEY);
+        message.setAppSKey(APPSKEY);
+        joined = 1;
+    }
+#endif
 }
 
 void lorawan_loop()
