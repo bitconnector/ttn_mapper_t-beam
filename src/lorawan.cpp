@@ -71,7 +71,7 @@ void lorawan_loop()
 
 void lorawan_send(uint8_t _port, uint8_t *_data, uint8_t _size, bool _confirm)
 {
-    LoRa.begin(868100000);
+    LoRa.begin(getFrequency());
     LoRa.setPreambleLength(8);
     LoRa.setSyncWord(0x34);
     LoRa.enableCrc();
@@ -85,7 +85,7 @@ void lorawan_send(uint8_t _port, uint8_t *_data, uint8_t _size, bool _confirm)
     // Serial.printf("Sending: %s\n", payload);
 
     message.uplink((char *)_data, _size, _port, _confirm);
-    printPackage((char *)message.data, message.dataLen, 0);
+    printPackage((char *)message.data, message.dataLen, 1);
 
     LoRa.beginPacket(); // start packet
     LoRa.write(message.data, message.dataLen);
@@ -110,6 +110,14 @@ void lorawan_sleep(unsigned long sleep_time)
 {
     Serial.println(F("No DutyCycle recalculation function!"));
     LoRa.sleep();
+}
+
+long getFrequency()
+{
+    uint16_t frequencylist[] = {8681, 8683, 8685, 8671, 8673, 8675, 8677, 8679};
+    uint8_t idx = message.frameCounterUp % (sizeof(frequencylist) / sizeof(uint16_t));
+    long frequency = frequencylist[idx] * 100000;
+    return frequency;
 }
 
 void printPackage(char *data, uint16_t size, bool structure)

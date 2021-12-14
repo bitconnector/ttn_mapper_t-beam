@@ -25,3 +25,4 @@ void lorawan_send(uint8_t _port, uint8_t *_data, uint8_t _size, bool _confirm);
 bool lorawan_has_send();
 void lorawan_sleep(unsigned long sleep_time);
 void printPackage(char *data, uint16_t size, bool structure = 0);
+long getFrequency();
