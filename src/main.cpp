@@ -14,7 +14,7 @@ unsigned int TX_INTERVAL = 30;
 #define LED 4
 #define ButtonPin 38
 
-void sendLocation()
+void sendLocation(bool force = 0)
 {
   startup_axp();
   setup_gps();
@@ -47,7 +47,7 @@ void sendLocation()
       port = 3;
       TX_INTERVAL = 120;
     }
-    else if (!gps_moved(25))
+    else if (!gps_moved(25) && !force)
     {
       port = 2;
     }
@@ -100,7 +100,8 @@ void setup()
     Serial.println(F("Wakeup caused by axp"));
     startup_axp();
     axp_interrupt();
-    axp_loop();
+    if (axp_loop() == 1)
+      sendLocation(1);
     Serial.println(F("going to sleep again"));
     Serial.print(F("entering deep sleep for "));
     Serial.print(TX_INTERVAL);

@@ -49,34 +49,40 @@ void axp_interrupt(void)
     axpIrq = true;
 }
 
-void axp_loop()
+uint8_t axp_loop()
 {
+    uint8_t ret = 0;
     if (axpIrq)
     {
         axp.readIRQ();
         if (axp.isPEKShortPressIRQ())
         {
             Serial.printf("isPEKShortPressIRQ\n");
+            ret = 1;
         }
         else if (axp.isPEKLongtPressIRQ())
         {
             Serial.printf("isPEKLongtPressIRQ\n");
+            ret = 2;
         }
         else if (axp.isVbusPlugInIRQ())
         {
             Serial.printf("isVbusPlugInIRQ\n");
             //axp_gps(0); //switch off gps
             //axp.setChgLEDMode(axp_chgled_mode_t::AXP20X_LED_OFF);
+            ret = 3;
         }
         else if (axp.isVbusRemoveIRQ())
         {
             Serial.printf("isVbusRemoveIRQ\n");
             //axp_gps(1); //switch on gps
             //axp.setChgLEDMode(axp_chgled_mode_t::AXP20X_LED_BLINK_1HZ);
+            ret = 4;
         }
         else if (axp.isVBUSPlug())
         {
             Serial.printf("isVBUSPlug\n");
+            ret = 5;
         }
         else
             Serial.printf("unknown IRQ reason\n");
@@ -84,6 +90,7 @@ void axp_loop()
         axp.clearIRQ();
         axpIrq = 0;
     }
+    return ret;
 }
 
 void axp_sleep()

@@ -14,6 +14,6 @@ void startup_axp();
 void axp_gps(bool state);
 void axp_lora(bool state);
 void axp_interrupt(void);
-void axp_loop();
+uint8_t axp_loop();
 void axp_sleep();
 uint8_t vbatt_bin(uint8_t *txBuffer, uint8_t offset);
