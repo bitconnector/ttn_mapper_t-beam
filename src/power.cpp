@@ -23,14 +23,12 @@ void setup_axp()
 {
     startup_axp();
 
+    axp.adc1Enable(AXP202_VBUS_VOL_ADC1 | AXP202_VBUS_CUR_ADC1 | AXP202_BATT_CUR_ADC1 | AXP202_BATT_VOL_ADC1, true);
+
     axp_gps(1);
     axp_lora(1);
 
-    axp.enableIRQ(axp_irq_t::AXP202_PEK_LONGPRESS_IRQ, true);
-    axp.enableIRQ(axp_irq_t::AXP202_PEK_SHORTPRESS_IRQ, true);
-    axp.enableIRQ(axp_irq_t::AXP202_VBUS_CONNECT_IRQ, true);
-    axp.enableIRQ(axp_irq_t::AXP202_VBUS_REMOVED_IRQ, true);
-
+    axp.enableIRQ(AXP202_PEK_LONGPRESS_IRQ | AXP202_PEK_SHORTPRESS_IRQ, true);
     axp.clearIRQ();
 }
 
@@ -101,7 +99,9 @@ void axp_sleep()
 
 uint8_t vbatt_bin(uint8_t *txBuffer, uint8_t offset)
 {
-    axp.debugCharging();
-    txBuffer[offset + 0] = axp.getBattVoltage() / 20;
+    if (!axp.isVBUSPlug() && axp.isBatteryConnect())
+        txBuffer[offset] = axp.getBattVoltage() / 20;
+    else
+        txBuffer[offset] = 0xff;
     return offset + 1;
 }
