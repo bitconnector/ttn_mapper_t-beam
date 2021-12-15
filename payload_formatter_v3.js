@@ -2,7 +2,7 @@ function decodeUplink(input) {
     var ptr = 0;
     var data = {};
 
-    data.bat = input.bytes[ptr] * 0.02;
+    data.bat = Math.round(input.bytes[ptr] * 2) / 100;
     ptr = ptr + 1;
 
     if (input.fPort === 1) {
@@ -33,5 +33,5 @@ function decodeUplink(input) {
         ptr = ptr + 9;
     }
 
-    return { data } ;
+    return { data };
 }
