@@ -77,11 +77,6 @@ uint8_t axp_loop()
             //axp.setChgLEDMode(axp_chgled_mode_t::AXP20X_LED_BLINK_1HZ);
             ret = 4;
         }
-        else if (axp.isVBUSPlug())
-        {
-            Serial.printf("isVBUSPlug\n");
-            ret = 5;
-        }
         else
             Serial.printf("unknown IRQ reason\n");
 
