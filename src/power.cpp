@@ -58,20 +58,28 @@ void axp_loop()
         {
             Serial.printf("isPEKShortPressIRQ\n");
         }
-        if (axp.isPEKLongtPressIRQ())
+        else if (axp.isPEKLongtPressIRQ())
         {
             Serial.printf("isPEKLongtPressIRQ\n");
         }
-        if (axp.isVbusPlugInIRQ())
+        else if (axp.isVbusPlugInIRQ())
         {
+            Serial.printf("isVbusPlugInIRQ\n");
             //axp_gps(0); //switch off gps
             //axp.setChgLEDMode(axp_chgled_mode_t::AXP20X_LED_OFF);
         }
-        if (axp.isVbusRemoveIRQ())
+        else if (axp.isVbusRemoveIRQ())
         {
+            Serial.printf("isVbusRemoveIRQ\n");
             //axp_gps(1); //switch on gps
             //axp.setChgLEDMode(axp_chgled_mode_t::AXP20X_LED_BLINK_1HZ);
         }
+        else if (axp.isVBUSPlug())
+        {
+            Serial.printf("isVBUSPlug\n");
+        }
+        else
+            Serial.printf("unknown IRQ reason\n");
 
         axp.clearIRQ();
         axpIrq = 0;
