@@ -9,6 +9,29 @@ Send your GPS-Location over [TTS](https://www.thethingsnetwork.org/). The Locati
 * deep sleep ESP32 to save energy
 * geofence for location upload
 * detect no movement
+* sleep-mode while not in use
+
+## Usage
+
+LED IO4(red):
+* off: device in permanent sleep or off
+* gliming: device is in deep sleep waiting for the next transmission time
+* on: device is active either joining or has woken up to send the next message
+
+LED CHG(blue):
+
+* off: everything ok
+* on: battery is charging
+
+LED GPS(red,next to the GPS-Module):
+* off: GPS off or no fix
+* blinking: GPS has fix
+
+Button Power(PWR):
+
+* short press(1 sec) to turn the device on or if already powered wake up, send the current location and go back to sleep again
+* long press(3 sec) put the device into permanent sleep mode turning off the GPS and radio while preserving LoraWAN credentials
+* very long press(7 sec) completely turn off the ESP loosing all credentials
 
 ## Hardware
 
