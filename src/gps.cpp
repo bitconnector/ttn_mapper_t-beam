@@ -19,7 +19,7 @@ void gps_loop()
 
 bool gps_valid()
 {
-    if (gps.location.age() < 10000)
+    if (gps.location.isValid() && gps.hdop.isValid() && gps.altitude.isValid())
         return true;
     else
         return false;

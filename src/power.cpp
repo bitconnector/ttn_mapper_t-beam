@@ -16,7 +16,7 @@ void startup_axp()
     }
 
     pinMode(PMU_IRQ, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(PMU_IRQ), axp_interrupt, FALLING);
+    //attachInterrupt(digitalPinToInterrupt(PMU_IRQ), axp_interrupt, FALLING);
 }
 
 void setup_axp()
@@ -63,22 +63,158 @@ uint8_t axp_loop()
             Serial.printf("isPEKLongtPressIRQ\n");
             ret = 2;
         }
-        else if (axp.isVbusPlugInIRQ())
+
+        Serial.println("axp20x irq enter!");
+        if (axp.isAcinOverVoltageIRQ())
+        {
+            Serial.printf("isAcinOverVoltageIRQ\n");
+        }
+        if (axp.isAcinPlugInIRQ())
+        {
+            Serial.printf("isAcinPlugInIRQ\n");
+        }
+        if (axp.isAcinRemoveIRQ())
+        {
+            Serial.printf("isAcinRemoveIRQ\n");
+        }
+        if (axp.isVbusOverVoltageIRQ())
+        {
+            Serial.printf("isVbusOverVoltageIRQ\n");
+        }
+        if (axp.isVbusPlugInIRQ())
         {
             Serial.printf("isVbusPlugInIRQ\n");
-            //axp_gps(0); //switch off gps
-            //axp.setChgLEDMode(axp_chgled_mode_t::AXP20X_LED_OFF);
-            ret = 3;
         }
-        else if (axp.isVbusRemoveIRQ())
+        if (axp.isVbusRemoveIRQ())
         {
             Serial.printf("isVbusRemoveIRQ\n");
-            //axp_gps(1); //switch on gps
-            //axp.setChgLEDMode(axp_chgled_mode_t::AXP20X_LED_BLINK_1HZ);
-            ret = 4;
         }
-        else
-            Serial.printf("unknown IRQ reason\n");
+        if (axp.isVbusLowVHOLDIRQ())
+        {
+            Serial.printf("isVbusLowVHOLDIRQ\n");
+        }
+        if (axp.isBattPlugInIRQ())
+        {
+            Serial.printf("isBattPlugInIRQ\n");
+        }
+        if (axp.isBattRemoveIRQ())
+        {
+            Serial.printf("isBattRemoveIRQ\n");
+        }
+        if (axp.isBattEnterActivateIRQ())
+        {
+            Serial.printf("isBattEnterActivateIRQ\n");
+        }
+        if (axp.isBattExitActivateIRQ())
+        {
+            Serial.printf("isBattExitActivateIRQ\n");
+        }
+        if (axp.isChargingIRQ())
+        {
+            Serial.printf("isChargingIRQ\n");
+        }
+        if (axp.isChargingDoneIRQ())
+        {
+            Serial.printf("isChargingDoneIRQ\n");
+        }
+        if (axp.isBattTempLowIRQ())
+        {
+            Serial.printf("isBattTempLowIRQ\n");
+        }
+        if (axp.isBattTempHighIRQ())
+        {
+            Serial.printf("isBattTempHighIRQ\n");
+        }
+        if (axp.isChipOvertemperatureIRQ())
+        {
+            Serial.printf("isChipOvertemperatureIRQ\n");
+        }
+        if (axp.isChargingCurrentLessIRQ())
+        {
+            Serial.printf("isChargingCurrentLessIRQ\n");
+        }
+        if (axp.isDC2VoltageLessIRQ())
+        {
+            Serial.printf("isDC2VoltageLessIRQ\n");
+        }
+        if (axp.isDC3VoltageLessIRQ())
+        {
+            Serial.printf("isDC3VoltageLessIRQ\n");
+        }
+        if (axp.isLDO3VoltageLessIRQ())
+        {
+            Serial.printf("isLDO3VoltageLessIRQ\n");
+        }
+        if (axp.isPEKShortPressIRQ())
+        {
+            Serial.printf("isPEKShortPressIRQ\n");
+        }
+        if (axp.isPEKLongtPressIRQ())
+        {
+            Serial.printf("isPEKLongtPressIRQ\n");
+        }
+        if (axp.isNOEPowerOnIRQ())
+        {
+            Serial.printf("isNOEPowerOnIRQ\n");
+        }
+        if (axp.isNOEPowerDownIRQ())
+        {
+            Serial.printf("isNOEPowerDownIRQ\n");
+        }
+        if (axp.isVBUSEffectiveIRQ())
+        {
+            Serial.printf("isVBUSEffectiveIRQ\n");
+        }
+        if (axp.isVBUSInvalidIRQ())
+        {
+            Serial.printf("isVBUSInvalidIRQ\n");
+        }
+        if (axp.isVUBSSessionIRQ())
+        {
+            Serial.printf("isVUBSSessionIRQ\n");
+        }
+        if (axp.isVUBSSessionEndIRQ())
+        {
+            Serial.printf("isVUBSSessionEndIRQ\n");
+        }
+        if (axp.isLowVoltageLevel1IRQ())
+        {
+            Serial.printf("isLowVoltageLevel1IRQ\n");
+        }
+        if (axp.isLowVoltageLevel2IRQ())
+        {
+            Serial.printf("isLowVoltageLevel2IRQ\n");
+        }
+        if (axp.isTimerTimeoutIRQ())
+        {
+            Serial.printf("isTimerTimeoutIRQ\n");
+            axp.offTimer();
+            axp.setChgLEDMode(AXP20X_LED_BLINK_1HZ);
+        }
+        if (axp.isPEKRisingEdgeIRQ())
+        {
+            Serial.printf("isPEKRisingEdgeIRQ\n");
+        }
+        if (axp.isPEKFallingEdgeIRQ())
+        {
+            Serial.printf("isPEKFallingEdgeIRQ\n");
+        }
+        if (axp.isGPIO3InputEdgeTriggerIRQ())
+        {
+            Serial.printf("isGPIO3InputEdgeTriggerIRQ\n");
+        }
+        if (axp.isGPIO2InputEdgeTriggerIRQ())
+        {
+            Serial.printf("isGPIO2InputEdgeTriggerIRQ\n");
+        }
+        if (axp.isGPIO1InputEdgeTriggerIRQ())
+        {
+            Serial.printf("isGPIO1InputEdgeTriggerIRQ\n");
+        }
+        if (axp.isGPIO0InputEdgeTriggerIRQ())
+        {
+            Serial.printf("isGPIO0InputEdgeTriggerIRQ\n");
+        }
 
         axp.clearIRQ();
         axpIrq = 0;

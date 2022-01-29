@@ -35,6 +35,7 @@ void startup_lorawan()
             LoRa.begin(868100000);
             LoRa.enableCrc();
             LoRa.disableInvertIQ();
+            LoRa.setSpreadingFactor(9);
 
             esp_random();
             otaa.setDevNonce((uint16_t)random(256 * 256));
@@ -48,7 +49,7 @@ void startup_lorawan()
             LoRa.disableCrc();
             LoRa.enableInvertIQ();
             LoRa.receive();
-            while (txTime + 10000 > millis() && !joined)
+            while (txTime + 20000 > millis() && !joined)
             {
                 if (LoRa.parsePacket())
                 {

@@ -9,7 +9,7 @@ https://randomnerdtutorials.com/esp32-deep-sleep-arduino-ide-wake-up-sources/
 #include "lorawan.hpp"
 #include "power.hpp"
 
-unsigned int TX_INTERVAL = 30;
+unsigned int TX_INTERVAL = 20;
 
 #define LED 4
 #define ButtonPin 38
@@ -30,7 +30,7 @@ void sendLocation(bool force = 0)
     axp_loop();
   }
   if (gps_valid())
-    Serial.println("got GPS");
+    Serial.printf("got GPS left %ims\n", (time - millis()));
   else
     Serial.println("no GPS");
 
@@ -100,15 +100,28 @@ void setup()
     Serial.println(F("Wakeup caused by axp"));
     startup_axp();
     axp_interrupt();
-    if (axp_loop() == 1)
+    axp_gps(1);
+    uint8_t cause = axp_loop();
+    if (cause == 1)
       sendLocation(1);
     Serial.println(F("going to sleep again"));
-    Serial.print(F("entering deep sleep for "));
-    Serial.print(TX_INTERVAL);
-    Serial.println(F("sec"));
-    esp_sleep_enable_timer_wakeup(TX_INTERVAL * 1000000);
-    Serial.flush();
-    axp_sleep();
+    if (cause != 2)
+    {
+      Serial.print(F("entering deep sleep for "));
+      Serial.print(TX_INTERVAL);
+      Serial.println(F("sec"));
+      esp_sleep_enable_timer_wakeup(TX_INTERVAL * 1000000);
+    }
+    else
+    {
+      Serial.print(F("entering deep sleep for infinity\n"));
+      esp_sleep_enable_ext0_wakeup(GPIO_NUM_35, 0); //axp
+      axp_gps(0);
+      digitalWrite(LED, HIGH); //turn the LED off
+      axp_sleep();
+      Serial.flush();
+      esp_deep_sleep_start();
+    }
   }
   else
   {
@@ -117,6 +130,9 @@ void setup()
     sendLocation();
   }
 
+  axp_sleep();
+  Serial.flush();
+  esp_sleep_enable_ext0_wakeup(GPIO_NUM_35, 0); //axp
   //digitalWrite(LED, HIGH);    //turn the LED off
   pinMode(LED, INPUT_PULLDOWN); //let the LED glim
   esp_deep_sleep_start();
