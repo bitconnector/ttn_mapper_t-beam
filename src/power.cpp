@@ -16,7 +16,7 @@ void startup_axp()
     }
 
     pinMode(PMU_IRQ, INPUT_PULLUP);
-    //attachInterrupt(digitalPinToInterrupt(PMU_IRQ), axp_interrupt, FALLING);
+    // attachInterrupt(digitalPinToInterrupt(PMU_IRQ), axp_interrupt, FALLING);
 }
 
 void setup_axp()
@@ -28,18 +28,39 @@ void setup_axp()
     axp_gps(1);
     axp_lora(1);
 
+    Serial.print(" getVWarningLevel1 ");
+    Serial.println(axp.getVWarningLevel1());
+    Serial.print(" getVWarningLevel2 ");
+    Serial.println(axp.getVWarningLevel2());
+    Serial.print(" getTimerStatus ");
+    Serial.println(axp.getTimerStatus());
+    Serial.print(" getBattPercentage ");
+    Serial.println(axp.getBattPercentage());
+    Serial.print(" getPowerDownVoltage ");
+    Serial.println(axp.getPowerDownVoltage());
+    Serial.print(" getBattVoltage ");
+    Serial.println(axp.getBattVoltage());
+    Serial.print(" getDCDC1Voltage ");
+    Serial.println(axp.getDCDC1Voltage());
+    Serial.print(" getDCDC2Voltage ");
+    Serial.println(axp.getDCDC2Voltage());
+    Serial.print(" getDCDC3Voltage ");
+    Serial.println(axp.getDCDC3Voltage());
+
+    axp.enableIRQ(axp_irq_t::AXP202_ALL_IRQ, false);
     axp.enableIRQ(AXP202_PEK_LONGPRESS_IRQ | AXP202_PEK_SHORTPRESS_IRQ, true);
+    // axp.enableIRQ(axp_irq_t::AXP202_NOE_ON_IRQ, false);
     axp.clearIRQ();
 }
 
 void axp_gps(bool state)
 {
-    axp.setPowerOutPut(AXP192_LDO3, state); //GPS
+    axp.setPowerOutPut(AXP192_LDO3, state); // GPS
 }
 
 void axp_lora(bool state)
 {
-    axp.setPowerOutPut(AXP192_LDO2, state); //LORA
+    axp.setPowerOutPut(AXP192_LDO2, state); // LORA
 }
 
 void axp_interrupt(void)

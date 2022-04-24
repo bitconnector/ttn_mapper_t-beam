@@ -33,9 +33,13 @@ void startup_lorawan()
         while (!joined)
         {
             LoRa.begin(868100000);
+            LoRa.setPreambleLength(8);
+            LoRa.setSyncWord(0x34);
             LoRa.enableCrc();
             LoRa.disableInvertIQ();
-            LoRa.setSpreadingFactor(9);
+            LoRa.setCodingRate4(5);
+            LoRa.setSpreadingFactor(7);
+            LoRa.setSignalBandwidth(125E3);
 
             esp_random();
             otaa.setDevNonce((uint16_t)random(256 * 256));
@@ -45,10 +49,15 @@ void startup_lorawan()
             LoRa.endPacket(); // finish packet and send it
             unsigned long txTime = millis();
 
-            //RX1
+            // RX1
+            LoRa.begin(868100000);
+            LoRa.setPreambleLength(8);
+            LoRa.setSyncWord(0x34);
             LoRa.disableCrc();
             LoRa.enableInvertIQ();
-            LoRa.receive();
+            LoRa.setCodingRate4(5);
+            LoRa.setSpreadingFactor(7);
+            LoRa.setSignalBandwidth(125E3);
             while (txTime + 20000 > millis() && !joined)
             {
                 if (LoRa.parsePacket())
