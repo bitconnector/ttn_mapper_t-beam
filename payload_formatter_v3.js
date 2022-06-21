@@ -2,7 +2,9 @@ function decodeUplink(input) {
     var ptr = 0;
     var data = {};
 
-    data.bat = Math.round(input.bytes[ptr] * 2) / 100;
+    data.bat = input.bytes[ptr]
+    data.bat += 250
+    data.bat /= 100
     ptr = ptr + 1;
 
     if (input.fPort === 1) {
@@ -32,6 +34,8 @@ function decodeUplink(input) {
         data.hdop = input.bytes[ptr + 8] / 10.0;
         ptr = ptr + 9;
     }
+
+    // data.msg += "\nbat:" + data.bat;
 
     return { data };
 }
