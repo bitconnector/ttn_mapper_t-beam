@@ -51,6 +51,8 @@ void setup_axp()
     axp.enableIRQ(AXP202_PEK_LONGPRESS_IRQ | AXP202_PEK_SHORTPRESS_IRQ, true);
     // axp.enableIRQ(axp_irq_t::AXP202_NOE_ON_IRQ, false);
     axp.clearIRQ();
+    axp.setlongPressTime(2); // Long press time to 2s
+    axp.setShutdownTime(3);  // Shutdown time to 10s
 }
 
 void axp_gps(bool state)

@@ -30,8 +30,8 @@ LED GPS(red,next to the GPS-Module):
 Button Power(PWR):
 
 * short press(1 sec) to turn the device on or if already powered wake up, send the current location and go back to sleep again
-* long press(3 sec) put the device into permanent sleep mode turning off the GPS and radio while preserving LoraWAN credentials
-* very long press(7 sec) completely turn off the ESP loosing all credentials
+* long press(2 sec/wait until IO4 LED goes off) put the device into permanent sleep mode turning off the GPS and radio while preserving LoraWAN credentials
+* very long press(10 sec) completely turn off the ESP loosing all credentials
 
 ## Hardware
 
