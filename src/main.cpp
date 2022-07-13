@@ -30,7 +30,7 @@ void sendLocation(bool force = 0)
     axp_loop();
   }
   if (gps_valid())
-    Serial.printf("got GPS left %ims\n", (time - millis()));
+    Serial.printf("got GPS left %lims\n", (time - millis()));
   else
     Serial.println("no GPS");
 
