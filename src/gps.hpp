@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #include <TinyGPS++.h>
 
-#include "locations.h"
+#include "config.hpp"
 
 extern TinyGPSPlus gps;
 extern HardwareSerial serialGPS;

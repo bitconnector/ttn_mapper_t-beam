@@ -49,7 +49,10 @@ Clone this repository and open it with [Visual Studio Code(vscode)](https://code
 
 ### Modification
 
-You have to modify the [credentials.h](src/credentials.h) by inserting your own TTS-keys and the [locations.h](src/locations.h) to use or disable the geofencing option. You also have to modify the regional parameters in the lmic lib under '.pio/libdeps/esp32/MCCI LoRaWAN LMIC library/project_config/lmic_project_config.h'
+| :warning: Modify the config file with your own data! |
+|------------------------------------------------------|
+
+You have to modify the [config.hpp](src/config.hpp) by inserting your own TTS-keys and use or disable the geofencing option
 
 ### Upload
 

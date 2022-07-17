@@ -8,11 +8,9 @@ https://randomnerdtutorials.com/esp32-deep-sleep-arduino-ide-wake-up-sources/
 #include "gps.hpp"
 #include "lorawan.hpp"
 #include "power.hpp"
+#include "config.hpp"
 
 unsigned int TX_INTERVAL = 20;
-
-#define LED 4
-#define ButtonPin 38
 
 void sendLocation(bool force = 0)
 {

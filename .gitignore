@@ -3,5 +3,4 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
-src/locations.h
-src/credentials.h
+src/config.hpp

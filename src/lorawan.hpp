@@ -4,7 +4,7 @@
 #include <LoraWANactivation.hpp>
 #include <LoRa.h>
 
-#include "credentials.h"
+#include "config.hpp"
 
 // LoRa Pins
 #define LoRa_RST 23
