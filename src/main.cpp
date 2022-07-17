@@ -113,7 +113,7 @@ void setup()
     else
     {
       Serial.print(F("entering deep sleep for infinity\n"));
-      esp_sleep_enable_ext0_wakeup(GPIO_NUM_35, 0); //axp
+      esp_sleep_enable_ext0_wakeup((gpio_num_t)AXP_IRQ, 0); //axp
       axp_gps(0);
       digitalWrite(LED, HIGH); //turn the LED off
       axp_sleep();
@@ -130,7 +130,7 @@ void setup()
 
   axp_sleep();
   Serial.flush();
-  esp_sleep_enable_ext0_wakeup(GPIO_NUM_35, 0); //axp
+  esp_sleep_enable_ext0_wakeup((gpio_num_t)AXP_IRQ, 0); //axp
   //digitalWrite(LED, HIGH);    //turn the LED off
   pinMode(LED, INPUT_PULLDOWN); //let the LED glim
   esp_deep_sleep_start();
