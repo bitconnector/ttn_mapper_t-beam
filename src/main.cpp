@@ -18,7 +18,7 @@ void sendLocation(bool force = 0)
   setup_gps();
   startup_lorawan();
 
-  //wait for gps
+  // wait for gps
   Serial.println(F("wait for GPS"));
   unsigned long time = millis() + 1200;
   while (!gps_valid() && time > millis())
@@ -32,12 +32,12 @@ void sendLocation(bool force = 0)
   else
     Serial.println("no GPS");
 
-  //send data
+  // send data
   Serial.println(F("send Data"));
   uint8_t txBuffer[14];
   uint8_t bufferSize = 0;
   uint8_t port = 1;
-  bufferSize = vbatt_bin(txBuffer, bufferSize); //get battery level
+  bufferSize = vbatt_bin(txBuffer, bufferSize); // get battery level
   if (gps_valid())
   {
     if (gps_geo())
@@ -61,7 +61,7 @@ void sendLocation(bool force = 0)
   }
   lorawan_send(port, txBuffer, bufferSize, 0);
 
-  //wait for end of transmission
+  // wait for end of transmission
   Serial.println(F("wait for the end of transmission"));
   while (!lorawan_has_send())
   {
@@ -70,7 +70,7 @@ void sendLocation(bool force = 0)
     axp_loop();
   }
 
-  //enter deep sleep
+  // enter deep sleep
   Serial.print(F("entering deep sleep for "));
   Serial.print(TX_INTERVAL);
   Serial.println(F("sec"));
@@ -113,9 +113,9 @@ void setup()
     else
     {
       Serial.print(F("entering deep sleep for infinity\n"));
-      esp_sleep_enable_ext0_wakeup((gpio_num_t)AXP_IRQ, 0); //axp
+      esp_sleep_enable_ext0_wakeup((gpio_num_t)AXP_IRQ, 0); // axp
       axp_gps(0);
-      digitalWrite(LED, HIGH); //turn the LED off
+      digitalWrite(LED, HIGH); // turn the LED off
       axp_sleep();
       Serial.flush();
       esp_deep_sleep_start();
@@ -130,9 +130,9 @@ void setup()
 
   axp_sleep();
   Serial.flush();
-  esp_sleep_enable_ext0_wakeup((gpio_num_t)AXP_IRQ, 0); //axp
-  //digitalWrite(LED, HIGH);    //turn the LED off
-  pinMode(LED, INPUT_PULLDOWN); //let the LED glim
+  esp_sleep_enable_ext0_wakeup((gpio_num_t)AXP_IRQ, 0); // axp
+  // digitalWrite(LED, HIGH);    //turn the LED off
+  pinMode(LED, INPUT_PULLDOWN); // let the LED glim
   esp_deep_sleep_start();
 }
 
