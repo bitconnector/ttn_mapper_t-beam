@@ -5,7 +5,7 @@ bool axpIrq = 0;
 
 void startup_axp()
 {
-    Wire.begin(21, 22);
+    Wire.begin(AXP_SDA, AXP_SCL);
     if (!axp.begin(Wire, AXP192_SLAVE_ADDRESS))
     {
         Serial.println("AXP192 Begin PASS");
@@ -15,8 +15,8 @@ void startup_axp()
         Serial.println("AXP192 Begin FAIL");
     }
 
-    pinMode(PMU_IRQ, INPUT_PULLUP);
-    // attachInterrupt(digitalPinToInterrupt(PMU_IRQ), axp_interrupt, FALLING);
+    pinMode(AXP_IRQ, INPUT_PULLUP);
+    // attachInterrupt(digitalPinToInterrupt(AXP_IRQ), axp_interrupt, FALLING);
 }
 
 void setup_axp()
@@ -75,7 +75,7 @@ uint8_t axp_loop()
 
 void axp_sleep()
 {
-    detachInterrupt(digitalPinToInterrupt(PMU_IRQ));
+    detachInterrupt(digitalPinToInterrupt(AXP_IRQ));
     esp_sleep_enable_ext0_wakeup(GPIO_NUM_35, 0);
 }
 

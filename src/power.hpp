@@ -2,9 +2,7 @@
 #include <Arduino.h>
 #include <axp20x.h>
 
-#define I2C_SDA 21
-#define I2C_SCL 22
-#define PMU_IRQ 35
+#include "config.hpp"
 
 extern AXP20X_Class axp;
 extern bool axpIrq;

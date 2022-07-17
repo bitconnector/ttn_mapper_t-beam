@@ -6,13 +6,6 @@
 
 #include "config.hpp"
 
-// LoRa Pins
-#define LoRa_RST 23
-#define LoRa_CS 18
-#define LoRa_DIO0 26
-#define LoRa_DIO1 33
-#define LoRa_DIO2 32
-
 extern unsigned char Buffer[235];
 extern RTC_DATA_ATTR LoraWANmessage message;
 extern RTC_DATA_ATTR bool joined;

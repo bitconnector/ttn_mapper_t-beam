@@ -1,7 +1,21 @@
 #pragma once
 
+// Hardware
 #define LED 4
 #define ButtonPin 38
+
+#define LoRa_RST 23
+#define LoRa_CS 18
+#define LoRa_DIO0 26
+#define LoRa_DIO1 33
+#define LoRa_DIO2 32
+
+#define GPS_RX 34
+#define GPS_TX 12
+
+#define AXP_SDA 21
+#define AXP_SCL 22
+#define AXP_IRQ 35
 
 // TTS credentials(tts_v3)
 // https://console.cloud.thethings.network/
