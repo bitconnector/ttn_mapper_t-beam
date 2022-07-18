@@ -4,8 +4,6 @@ unsigned char Buffer[235];
 RTC_DATA_ATTR LoraWANmessage message;
 RTC_DATA_ATTR bool joined = 0;
 
-bool has_send = false;
-
 void startup_lorawan()
 {
     LoRa.setPins(LoRa_CS, LoRa_RST, LoRa_DIO0);
@@ -16,8 +14,6 @@ void startup_lorawan()
     LoRa.setCodingRate4(5);
     LoRa.setSpreadingFactor(7);
     LoRa.setSignalBandwidth(125E3);
-
-    has_send = 0;
 
 #ifdef USE_OTAA
     if (joined == 0)
@@ -85,12 +81,7 @@ void startup_lorawan()
 #endif
 }
 
-void lorawan_loop()
-{
-    delay(0);
-}
-
-void lorawan_send(uint8_t _port, uint8_t *_data, uint8_t _size, bool _confirm)
+bool lorawan_send(uint8_t _port, uint8_t *_data, uint8_t _size, bool _confirm, int _sf)
 {
     LoRa.begin(getFrequency());
     LoRa.setPreambleLength(8);
@@ -98,7 +89,7 @@ void lorawan_send(uint8_t _port, uint8_t *_data, uint8_t _size, bool _confirm)
     LoRa.enableCrc();
     LoRa.disableInvertIQ();
     LoRa.setCodingRate4(5);
-    LoRa.setSpreadingFactor(7);
+    LoRa.setSpreadingFactor(_sf);
     LoRa.setSignalBandwidth(125E3);
 
     // char payload[100];
@@ -111,7 +102,11 @@ void lorawan_send(uint8_t _port, uint8_t *_data, uint8_t _size, bool _confirm)
     LoRa.beginPacket(); // start packet
     LoRa.write(message.data, message.dataLen);
     LoRa.endPacket(); // finish packet and send it
-    has_send = 1;
+
+    if(_confirm){
+        
+    }
+    return 1;
 }
 
 void printHex2(unsigned v)
@@ -122,14 +117,8 @@ void printHex2(unsigned v)
     Serial.print(v, HEX);
 }
 
-bool lorawan_has_send()
+void lorawan_sleep()
 {
-    return has_send;
-}
-
-void lorawan_sleep(unsigned long sleep_time)
-{
-    Serial.println(F("No DutyCycle recalculation function!"));
     LoRa.sleep();
 }
 

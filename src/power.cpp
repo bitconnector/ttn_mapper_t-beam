@@ -76,7 +76,7 @@ uint8_t axp_loop()
 void axp_sleep()
 {
     detachInterrupt(digitalPinToInterrupt(AXP_IRQ));
-    esp_sleep_enable_ext0_wakeup(GPIO_NUM_35, 0);
+    esp_sleep_enable_ext0_wakeup((gpio_num_t)AXP_IRQ, 0);
 }
 
 uint8_t vbatt_bin(uint8_t *txBuffer, uint8_t offset)

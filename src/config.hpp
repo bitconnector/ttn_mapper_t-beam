@@ -17,6 +17,10 @@
 #define AXP_SCL 22
 #define AXP_IRQ 35
 
+#define LORAWAN_DEFAULT_SF 7
+#define GPS_INTERVAL 30
+#define GPS_MOVE_DIST 25
+
 // TTS credentials(tts_v3)
 // https://console.cloud.thethings.network/
 
