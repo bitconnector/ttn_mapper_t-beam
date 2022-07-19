@@ -25,8 +25,9 @@ void setup()
   Serial.begin(115200);
   digitalWrite(LED, LOW); // LED on
 
-  esp_sleep_wakeup_cause_t wakeup_reason = esp_sleep_get_wakeup_cause();
-  if (wakeup_reason == ESP_SLEEP_WAKEUP_TIMER)
+  esp_sleep_wakeup_cause_t wakeup_reason =
+      esp_sleep_get_wakeup_cause();
+  if (wakeup_reason == ESP_SLEEP_WAKEUP_TIMER) // <-------------- timer
   {
     Serial.println(F("Wakeup caused by timer"));
     if (getGPS() == 1)
@@ -40,23 +41,24 @@ void setup()
     axp_interrupt();
     axp_gps(1); // turn GPS on
     uint8_t cause = axp_loop();
-    if (cause != 2)
+    if (cause == 1) // <----------------------------- short press power
     {
+      Serial.println(F("send status and location"));
       int gpsStatus = getGPS();
       sendStatus(gpsStatus);
       if (gpsStatus == 1 || gpsStatus == 2)
         sendLocation();
       setSleepTimer(TX_INTERVAL);
     }
-    else
+    else if (cause == 2) // <------------------------- long press power
     {
       Serial.print(F("entering deep sleep for infinity\n"));
       axp_gps(0);              // turn GPS off
       digitalWrite(LED, HIGH); // turn the LED off
-      enterSleep();
+      enterSleep();            // enter sleep without timer
     }
   }
-  else
+  else // <------------------------------------------------------ reset
   {
     Serial.println(F("Wakeup caused by reset"));
     setup_axp();
