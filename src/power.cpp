@@ -26,6 +26,7 @@ void setup_axp()
     axp.adc1Enable(AXP202_VBUS_VOL_ADC1 | AXP202_VBUS_CUR_ADC1 | AXP202_BATT_CUR_ADC1 | AXP202_BATT_VOL_ADC1, true);
     axp.setlongPressTime(2); // Long press time to 2s
     axp.setShutdownTime(3);  // Shutdown time to 10s
+    axp.setPowerDownVoltage(3400);
 
     axp_gps(1);
     axp_lora(1);
