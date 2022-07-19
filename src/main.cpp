@@ -64,6 +64,10 @@ void setup()
       digitalWrite(LED, HIGH); // turn the LED off
       enterSleep();            // enter sleep without timer
     }
+    else if (cause == 3) // <------------------------- battery critical
+    {
+      Serial.println(F("Battery low shutting down"));
+    }
   }
   else // <------------------------------------------------------ reset
   {

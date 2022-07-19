@@ -32,7 +32,7 @@ void setup_axp()
     axp_lora(1);
 
     axp.enableIRQ(axp_irq_t::AXP202_ALL_IRQ, false);
-    axp.enableIRQ(AXP202_PEK_LONGPRESS_IRQ | AXP202_PEK_SHORTPRESS_IRQ, true);
+    axp.enableIRQ(AXP202_PEK_LONGPRESS_IRQ | AXP202_PEK_SHORTPRESS_IRQ | AXP202_NOE_OFF_IRQ, true);
     axp.clearIRQ();
 }
 
@@ -55,11 +55,17 @@ uint8_t axp_cause()
         Serial.printf("isPEKShortPressIRQ\n");
         ret = 1;
     }
-    else if (axp.isPEKLongtPressIRQ())
+    if (axp.isPEKLongtPressIRQ())
     {
         Serial.printf("isPEKLongtPressIRQ\n");
         ret = 2;
     }
+    if (axp.isNOEPowerDownIRQ())
+    {
+        Serial.printf("isNOEPowerDownIRQ\n");
+        ret = 3;
+    }
+
     axp.clearIRQ();
     return ret;
 }
