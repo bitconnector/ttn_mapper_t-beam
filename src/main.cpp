@@ -14,7 +14,7 @@ unsigned int TX_INTERVAL = GPS_INTERVAL;
 
 int getGPS();
 void sendLocation();
-void sendStatus(int status);
+void sendStatus(int state, int gps);
 void setSleepTimer(int seconds);
 void enterSleep();
 
@@ -45,7 +45,7 @@ void setup()
     {
       Serial.println(F("send status and location"));
       int gpsStatus = getGPS();
-      sendStatus(gpsStatus);
+      sendStatus(1, gpsStatus);
       if (gpsStatus == 1 || gpsStatus == 2)
         sendLocation();
       setSleepTimer(TX_INTERVAL);
@@ -54,6 +54,7 @@ void setup()
     {
       Serial.print(F("entering deep sleep for infinity\n"));
       axp_gps(0);              // turn GPS off
+      sendStatus(3, 0);
       digitalWrite(LED, HIGH); // turn the LED off
       enterSleep();            // enter sleep without timer
     }
@@ -63,6 +64,7 @@ void setup()
     Serial.println(F("Wakeup caused by reset"));
     setup_axp();
     startup_lorawan();
+    sendStatus(2, 0);
     setSleepTimer(TX_INTERVAL);
   }
 
@@ -105,14 +107,16 @@ void sendLocation()
   lorawan_send(port, txBuffer, bufferSize, 0, LORAWAN_DEFAULT_SF);
 }
 
-void sendStatus(int status)
+void sendStatus(int state, int gps)
 {
   startup_lorawan();
   uint8_t txBuffer[14];
   uint8_t bufferSize = 0;
   uint8_t port = 1;
   bufferSize = vbatt_bin(txBuffer, bufferSize); // get battery level
-  txBuffer[bufferSize] = status;
+  txBuffer[bufferSize] = state;
+  bufferSize++;
+  txBuffer[bufferSize] = gps;
   bufferSize++;
   lorawan_send(port, txBuffer, bufferSize, 0, 10);
 }
