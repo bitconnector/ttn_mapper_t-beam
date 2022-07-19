@@ -26,6 +26,7 @@ void setup()
   pinMode(ButtonPin, INPUT);
   Serial.begin(115200);
   digitalWrite(LED, LOW); // LED on
+  startup_axp();
 
   esp_sleep_wakeup_cause_t wakeup_reason =
       esp_sleep_get_wakeup_cause();
@@ -45,10 +46,8 @@ void setup()
   else if (wakeup_reason == ESP_SLEEP_WAKEUP_EXT0)
   {
     Serial.println(F("Wakeup caused by axp"));
-    startup_axp();
-    axp_interrupt();
     axp_gps(1); // turn GPS on
-    uint8_t cause = axp_loop();
+    uint8_t cause = axp_cause();
     if (cause == 1) // <----------------------------- short press power
     {
       Serial.println(F("send status and location"));
