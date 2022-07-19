@@ -2,22 +2,34 @@ function decodeUplink(input) {
     var ptr = 0;
     var data = {};
 
-    data.bat = input.bytes[ptr]
-    data.bat += 250
-    data.bat /= 100
+    if (input.bytes[ptr] === 255) {
+        data.bat = 5;
+        data.batState = "charging"
+    }
+    else {
+        data.bat = input.bytes[ptr]
+        data.bat += 250
+        data.bat /= 100
+        data.batState = "bat: " + data.bat + "V";
+    }
     ptr = ptr + 1;
 
     if (input.fPort === 1) {
-        data.msg = "no-gps";
+        data.msg = "status: ";
+        if (input.bytes[ptr] === 1) data.msg += "button pressed"
+        if (input.bytes[ptr] === 2) data.msg += "startup"
+        if (input.bytes[ptr] === 3) data.msg += "enter sleep"
+        if (input.bytes[ptr] === 4) data.msg += "running"
+        ptr = ptr + 1;
+        data.msg += "\nGPS: "
+        if (input.bytes[ptr] === 0) data.msg += "no fix"
+        if (input.bytes[ptr] === 1) data.msg += "ok"
+        if (input.bytes[ptr] === 2) data.msg += "no movement"
+        if (input.bytes[ptr] === 3) data.msg += "geofence"
+        ptr = ptr + 1;
     }
-    else if (input.fPort === 2) {
-        data.msg = "no-movement";
-    }
-    else if (input.fPort === 3) {
-        data.msg = "geofence";
-    }
-    else {
-        data.msg = "ok";
+    else if (input.fPort === 21) {
+        data.msg = "location: ";
         data.lat = ((input.bytes[ptr] << 16) >>> 0) + ((input.bytes[ptr + 1] << 8) >>> 0) + input.bytes[ptr + 2];
         data.lat = (data.lat / 16777215.0 * 180) - 90;
         data.lon = ((input.bytes[ptr + 3] << 16) >>> 0) + ((input.bytes[ptr + 4] << 8) >>> 0) + input.bytes[ptr + 5];
@@ -33,9 +45,11 @@ function decodeUplink(input) {
         }
         data.hdop = input.bytes[ptr + 8] / 10.0;
         ptr = ptr + 9;
+
+        data.msg += data.lat + " " + data.lon;
     }
 
-    // data.msg += "\nbat:" + data.bat;
+    data.msg += "\n" + data.batState;
 
     return { data };
 }

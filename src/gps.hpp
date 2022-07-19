@@ -12,6 +12,7 @@ extern RTC_DATA_ATTR double last_lng;
 
 void setup_gps();
 void gps_loop();
+int getGPS();
 bool gps_valid();
 bool gps_moved(int meter);
 uint8_t gps_geo();

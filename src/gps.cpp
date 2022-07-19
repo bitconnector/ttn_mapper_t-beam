@@ -13,8 +13,38 @@ void gps_loop()
     unsigned long lock = millis() + 2;
     while (serialGPS.available() > 0 && millis() < lock)
     {
-        gps.encode(serialGPS.read());
+        char c = serialGPS.read();
+        gps.encode(c);
+        Serial.print(c);
     }
+}
+
+int getGPS()
+{
+    setup_gps();
+
+    unsigned long time = millis() + 1200;
+    while (!gps_valid() && time > millis())
+        gps_loop();
+
+    if (!gps_valid()) // no GPS
+    {
+        Serial.println("\nGPS: no fix");
+        return 0;
+    }
+    if (gps_geo()) // Geofence
+    {
+        Serial.println("\nGPS: geofence");
+        return 3;
+    }
+    if (!gps_moved(GPS_MOVE_DIST)) // no movement
+    {
+        Serial.println("\nGPS: no movement");
+        return 2;
+    }
+
+    Serial.println("\nGPS: ok");
+    return 1; // GPS ok
 }
 
 bool gps_valid()

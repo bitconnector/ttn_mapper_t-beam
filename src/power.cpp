@@ -45,38 +45,28 @@ void axp_lora(bool state)
     axp.setPowerOutPut(AXP192_LDO2, state); // LORA
 }
 
-void axp_interrupt(void)
-{
-    axpIrq = true;
-}
-
-uint8_t axp_loop()
+uint8_t axp_cause()
 {
     uint8_t ret = 0;
-    if (axpIrq)
+    axp.readIRQ();
+    if (axp.isPEKShortPressIRQ())
     {
-        axp.readIRQ();
-        if (axp.isPEKShortPressIRQ())
-        {
-            Serial.printf("isPEKShortPressIRQ\n");
-            ret = 1;
-        }
-        else if (axp.isPEKLongtPressIRQ())
-        {
-            Serial.printf("isPEKLongtPressIRQ\n");
-            ret = 2;
-        }
-
-        axp.clearIRQ();
-        axpIrq = 0;
+        Serial.printf("isPEKShortPressIRQ\n");
+        ret = 1;
     }
+    else if (axp.isPEKLongtPressIRQ())
+    {
+        Serial.printf("isPEKLongtPressIRQ\n");
+        ret = 2;
+    }
+    axp.clearIRQ();
     return ret;
 }
 
 void axp_sleep()
 {
     detachInterrupt(digitalPinToInterrupt(AXP_IRQ));
-    esp_sleep_enable_ext0_wakeup(GPIO_NUM_35, 0);
+    esp_sleep_enable_ext0_wakeup((gpio_num_t)AXP_IRQ, 0);
 }
 
 uint8_t vbatt_bin(uint8_t *txBuffer, uint8_t offset)
