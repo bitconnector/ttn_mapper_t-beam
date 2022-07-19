@@ -11,6 +11,7 @@ https://randomnerdtutorials.com/esp32-deep-sleep-arduino-ide-wake-up-sources/
 #include "config.hpp"
 
 unsigned int TX_INTERVAL = GPS_INTERVAL;
+RTC_DATA_ATTR int wakeup_count = 0;
 
 int getGPS();
 void sendLocation();
@@ -20,6 +21,7 @@ void enterSleep();
 
 void setup()
 {
+  wakeup_count++;
   pinMode(LED, OUTPUT);
   pinMode(ButtonPin, INPUT);
   Serial.begin(115200);
@@ -30,7 +32,13 @@ void setup()
   if (wakeup_reason == ESP_SLEEP_WAKEUP_TIMER) // <-------------- timer
   {
     Serial.println(F("Wakeup caused by timer"));
-    if (getGPS() == 1)
+    int gpsStatus = getGPS();
+    if (wakeup_count % STATUS_INTERVAL == 0)
+    {
+      Serial.println(F("periodically send state"));
+      sendStatus(4, gpsStatus);
+    }
+    if (gpsStatus == 1)
       sendLocation();
     setSleepTimer(TX_INTERVAL);
   }
@@ -53,7 +61,7 @@ void setup()
     else if (cause == 2) // <------------------------- long press power
     {
       Serial.print(F("entering deep sleep for infinity\n"));
-      axp_gps(0);              // turn GPS off
+      axp_gps(0); // turn GPS off
       sendStatus(3, 0);
       digitalWrite(LED, HIGH); // turn the LED off
       enterSleep();            // enter sleep without timer

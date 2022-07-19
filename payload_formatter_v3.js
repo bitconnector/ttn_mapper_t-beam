@@ -19,6 +19,7 @@ function decodeUplink(input) {
         if (input.bytes[ptr] === 1) data.msg += "button pressed"
         if (input.bytes[ptr] === 2) data.msg += "startup"
         if (input.bytes[ptr] === 3) data.msg += "enter sleep"
+        if (input.bytes[ptr] === 4) data.msg += "running"
         ptr = ptr + 1;
         data.msg += "\nGPS: "
         if (input.bytes[ptr] === 0) data.msg += "no fix"
