@@ -104,7 +104,7 @@ void sendStatus(int state, int gps)
   bufferSize++;
   txBuffer[bufferSize] = gps;
   bufferSize++;
-  lorawan_send(port, txBuffer, bufferSize, 0, 10);
+  lorawan_send(port, txBuffer, bufferSize, 0, STATUS_SF);
 }
 
 void setSleepTimer(int seconds)

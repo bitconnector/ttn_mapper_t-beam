@@ -21,6 +21,7 @@
 #define GPS_INTERVAL 30
 #define GPS_MOVE_DIST 25
 #define STATUS_INTERVAL 10
+#define STATUS_SF 10
 
 // TTS credentials(tts_v3)
 // https://console.cloud.thethings.network/
