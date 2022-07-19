@@ -13,7 +13,9 @@ void gps_loop()
     unsigned long lock = millis() + 2;
     while (serialGPS.available() > 0 && millis() < lock)
     {
-        gps.encode(serialGPS.read());
+        char c = serialGPS.read();
+        gps.encode(c);
+        Serial.print(c);
     }
 }
 

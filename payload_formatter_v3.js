@@ -25,11 +25,11 @@ function decodeUplink(input) {
         if (input.bytes[ptr] === 0) data.msg += "no fix"
         if (input.bytes[ptr] === 1) data.msg += "ok"
         if (input.bytes[ptr] === 2) data.msg += "no movement"
-        if (input.bytes[ptr] === 2) data.msg += "geofence"
+        if (input.bytes[ptr] === 3) data.msg += "geofence"
         ptr = ptr + 1;
     }
     else if (input.fPort === 21) {
-        data.msg = "location";
+        data.msg = "location: ";
         data.lat = ((input.bytes[ptr] << 16) >>> 0) + ((input.bytes[ptr + 1] << 8) >>> 0) + input.bytes[ptr + 2];
         data.lat = (data.lat / 16777215.0 * 180) - 90;
         data.lon = ((input.bytes[ptr + 3] << 16) >>> 0) + ((input.bytes[ptr + 4] << 8) >>> 0) + input.bytes[ptr + 5];
@@ -45,6 +45,8 @@ function decodeUplink(input) {
         }
         data.hdop = input.bytes[ptr + 8] / 10.0;
         ptr = ptr + 9;
+
+        data.msg += data.lat + " " + data.lon;
     }
 
     data.msg += "\n" + data.batState;

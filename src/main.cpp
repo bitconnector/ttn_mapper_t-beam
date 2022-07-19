@@ -27,6 +27,7 @@ void setup()
   Serial.begin(115200);
   digitalWrite(LED, LOW); // LED on
   startup_axp();
+  setup_gps();
 
   esp_sleep_wakeup_cause_t wakeup_reason =
       esp_sleep_get_wakeup_cause();
