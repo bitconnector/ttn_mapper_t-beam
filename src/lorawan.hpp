@@ -15,3 +15,5 @@ bool lorawan_send(uint8_t _port, uint8_t *_data, uint8_t _size, bool _confirm, i
 void lorawan_sleep();
 void printPackage(char *data, uint16_t size, bool structure = 0);
 long getFrequency();
+void lora_tx(long frequency, int sf);
+void lora_rx(long frequency, int sf);
