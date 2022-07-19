@@ -27,7 +27,6 @@ void setup()
   Serial.begin(115200);
   digitalWrite(LED, LOW); // LED on
   startup_axp();
-  setup_gps();
 
   esp_sleep_wakeup_cause_t wakeup_reason =
       esp_sleep_get_wakeup_cause();
@@ -93,14 +92,24 @@ int getGPS()
     gps_loop();
 
   if (!gps_valid()) // no GPS
+  {
+    Serial.println("\nGPS: no fix");
     return 0;
+  }
 
   if (gps_geo()) // Geofence
+  {
+    Serial.println("\nGPS: geofence");
     return 3;
+  }
 
   if (!gps_moved(GPS_MOVE_DIST)) // no movement
+  {
+    Serial.println("\nGPS: no movement");
     return 2;
+  }
 
+  Serial.println("\nGPS: ok");
   return 1; // GPS ok
 }
 
