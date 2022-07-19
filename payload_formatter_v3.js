@@ -1,16 +1,21 @@
 function decodeUplink(input) {
+    bat_min = 3.4
+    bat_max = 4.13
+
     var ptr = 0;
     var data = {};
 
     if (input.bytes[ptr] === 255) {
-        data.bat = 5;
-        data.batState = "charging"
+        data.bat = bat_max;
+        data.percentage = 100
+        batState = "charging"
     }
     else {
         data.bat = input.bytes[ptr]
         data.bat += 250
         data.bat /= 100
-        data.batState = "bat: " + data.bat + "V";
+        data.percentage = ((data.bat - bat_min) / (bat_max - bat_min)) * 100 | 0
+        batState = "bat: " + data.percentage + "% " + data.bat + "V";
     }
     ptr = ptr + 1;
 
@@ -49,7 +54,7 @@ function decodeUplink(input) {
         data.msg += data.lat + " " + data.lon;
     }
 
-    data.msg += "\n" + data.batState;
+    data.msg += "\n" + batState;
 
     return { data };
 }
