@@ -1,6 +1,6 @@
 function decodeUplink(input) {
     bat_min = 3.4
-    bat_max = 4.13
+    bat_max = 4.16
 
     var ptr = 0;
     var data = {};
@@ -21,16 +21,19 @@ function decodeUplink(input) {
 
     if (input.fPort === 1) {
         data.msg = "status: ";
-        if (input.bytes[ptr] === 1) data.msg += "button pressed"
-        if (input.bytes[ptr] === 2) data.msg += "startup"
-        if (input.bytes[ptr] === 3) data.msg += "enter sleep"
-        if (input.bytes[ptr] === 4) data.msg += "running"
+        data.status = input.bytes[ptr]
+        if (data.status === 1) data.msg += "button pressed"
+        if (data.status === 2) data.msg += "startup"
+        if (data.status === 3) data.msg += "enter sleep"
+        if (data.status === 4) data.msg += "running"
         ptr = ptr + 1;
+
         data.msg += "\nGPS: "
-        if (input.bytes[ptr] === 0) data.msg += "no fix"
-        if (input.bytes[ptr] === 1) data.msg += "ok"
-        if (input.bytes[ptr] === 2) data.msg += "no movement"
-        if (input.bytes[ptr] === 3) data.msg += "geofence"
+        data.gps = input.bytes[ptr]
+        if (data.gps === 0) data.msg += "no fix"
+        if (data.gps === 1) data.msg += "ok"
+        if (data.gps === 2) data.msg += "no movement"
+        if (data.gps === 3) data.msg += "geofence"
         ptr = ptr + 1;
     }
     else if (input.fPort === 21) {
