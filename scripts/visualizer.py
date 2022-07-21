@@ -39,12 +39,30 @@ def plotData(data, color):
                 label='Points', linewidth=4, color=color)
 
 
+def plotData2(data, color):
+    idx_start = 0
+    while idx_start < len(data["values"]):
+        if float(data["values"][idx_start][1]) <= STARTINGVOLTAGE:
+            break
+        idx_start = idx_start+1
+
+    print("start index:", idx_start)
+    tou = [None, *data["values"][idx_start:], None]
+    for prev, curr, nxt in zip(tou, tou[1:], tou[2:]):
+        #print(prev, curr, nxt)
+        if(prev):
+            linex = [int(prev[0]) / 3600, int(curr[0]) / 3600]
+            liney = [float(prev[1]), float(curr[1])]
+            plt.plot(linex, liney,
+                     label='Path', linewidth=2, color=color)
+
+
 def openLogs(logs):
     for i in range(len(logs)):
         print(logs[i])
         with open(logs[i]) as fp:
             data = json.loads(fp.read())
-        plotData(data, COLOURS[i])
+        plotData2(data, COLOURS[i])
 
 
 openLogs(logs)
