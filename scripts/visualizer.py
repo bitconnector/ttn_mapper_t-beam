@@ -35,8 +35,6 @@ def plotData(data, color):
 
     plt.plot(a_time_h[idx_start:], a_bat[idx_start:],
              label='Path', linewidth=2, color=color)
-    plt.scatter(a_time_h[idx_start:], a_bat[idx_start:],
-                label='Points', linewidth=4, color=color)
 
 
 def plotData2(data, color):
@@ -62,7 +60,10 @@ def openLogs(logs):
         print(logs[i])
         with open(logs[i]) as fp:
             data = json.loads(fp.read())
-        plotData2(data, COLOURS[i])
+            if not "ver" in data:
+                plotData(data, COLOURS[i])
+            elif data["ver"] == 1:
+                plotData2(data, COLOURS[i])
 
 
 openLogs(logs)
