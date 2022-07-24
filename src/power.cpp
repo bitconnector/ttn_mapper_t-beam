@@ -28,6 +28,10 @@ void setup_axp()
     axp.setShutdownTime(3);  // Shutdown time to 10s
     axp.setPowerDownVoltage(3400);
 
+    axp.setLDO2Voltage(2000);  // LoRa VDD
+    axp.setLDO3Voltage(3000);  // GPS
+    axp.setDCDC3Voltage(2500); // lower ESP32 voltage
+
     axp_gps(1);
     axp_lora(1);
 
@@ -36,9 +40,21 @@ void setup_axp()
     axp.clearIRQ();
 }
 
-void axp_gps(bool state)
+void axp_gps(uint8_t state)
 {
-    axp.setPowerOutPut(AXP192_LDO3, state); // GPS
+    switch (state)
+    {
+    case 1:
+        axp.setPowerOutPut(AXP192_LDO3, AXP202_ON); // GPS
+        axp.setLDO3Voltage(3000);
+        break;
+    case 2:
+        axp.setPowerOutPut(AXP192_LDO3, AXP202_ON); // GPS
+        axp.setLDO3Voltage(2500);
+        break;
+    default:
+        axp.setPowerOutPut(AXP192_LDO3, AXP202_OFF); // GPS
+    }
 }
 
 void axp_lora(bool state)
