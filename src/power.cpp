@@ -23,10 +23,13 @@ void setup_axp()
 {
     startup_axp();
 
-    axp.adc1Enable(AXP202_VBUS_VOL_ADC1 | AXP202_VBUS_CUR_ADC1 | AXP202_BATT_CUR_ADC1 | AXP202_BATT_VOL_ADC1, true);
+    axp.adc1Enable(AXP202_VBUS_VOL_ADC1 | AXP202_VBUS_CUR_ADC1 |
+                       AXP202_BATT_CUR_ADC1 | AXP202_BATT_VOL_ADC1,
+                   true);
+
     axp.setlongPressTime(2); // Long press time to 2s
     axp.setShutdownTime(3);  // Shutdown time to 10s
-    axp.setPowerDownVoltage(3400);
+    axp.setPowerDownVoltage(3200);
 
     axp.setLDO2Voltage(2000);  // LoRa VDD
     axp.setLDO3Voltage(3000);  // GPS
