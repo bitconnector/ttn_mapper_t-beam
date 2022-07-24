@@ -5,3 +5,4 @@
 .vscode/ipch
 src/config.hpp
 scripts/config.ini
+scripts/*.log

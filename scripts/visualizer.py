@@ -71,7 +71,7 @@ openLogs(logs)
 plt.title(str(logs)+" bat")
 plt.xlabel('time in h')
 plt.ylabel('bat in v')
-plt.ylim(3.5, 4.2)
+plt.ylim(3.2, 4.2)
 # plt.axis('equal')
 
 plt.show()
