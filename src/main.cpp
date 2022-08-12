@@ -33,6 +33,12 @@ void setup()
   {
     Serial.println(F("Wakeup caused by timer"));
     int gpsStatus = getGPS();
+
+    if (gpsStatus == 0)
+      axp_gps(1); // give GPS more volt to get a fix
+    else
+      axp_gps(2); // turn down voltage for GPS to save energy
+
     if (wakeup_count % STATUS_INTERVAL == 0)
     {
       Serial.println(F("periodically send state"));
@@ -64,10 +70,15 @@ void setup()
       digitalWrite(LED, HIGH); // turn the LED off
       enterSleep();            // enter sleep without timer
     }
+    else if (cause == 3) // <------------------------- battery critical
+    {
+      Serial.println(F("Battery low shutting down"));
+    }
   }
   else // <------------------------------------------------------ reset
   {
     Serial.println(F("Wakeup caused by reset"));
+    delay(3000);
     setup_axp();
     startup_lorawan();
     sendStatus(2, 0);

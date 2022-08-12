@@ -1,0 +1,7 @@
+[MQTT]
+server = eu1.cloud.thethings.network
+port = 1883
+user = application@ttn
+pass = NNSXS.II75FDDP6SGYPEKQ6PRM4Y.JZKGBPDGGJZJXLBV2GVEVFSWAIUVL
+topic = #
+

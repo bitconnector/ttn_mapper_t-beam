@@ -52,7 +52,7 @@ Clone this repository and open it with [Visual Studio Code(vscode)](https://code
 | :warning: Modify the config file with your own data! |
 |------------------------------------------------------|
 
-You have to modify the [config.hpp](src/config.hpp) by inserting your own TTS-keys and use or disable the geofencing option
+You have to copy [config.hpp.example](src/config.hpp.example). Insert your own TTS-keys and use or disable the geofencing option
 
 ### Upload
 
