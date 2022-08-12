@@ -33,7 +33,7 @@ void setup_axp()
 
     axp.setLDO2Voltage(2000);  // LoRa VDD
     axp.setLDO3Voltage(3000);  // GPS
-    axp.setDCDC3Voltage(2500); // lower ESP32 voltage
+    axp.setDCDC3Voltage(2600); // lower ESP32 voltage
 
     axp_gps(1);
     axp_lora(1);
