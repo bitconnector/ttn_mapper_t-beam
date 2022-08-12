@@ -8,6 +8,13 @@ void setup_gps()
     serialGPS.begin(9600, SERIAL_8N1, GPS_RX, GPS_TX);
 }
 
+void end_gps()
+{
+    serialGPS.end();
+    digitalWrite(GPS_TX, HIGH);
+    gpio_hold_en((gpio_num_t)GPS_TX);
+}
+
 void gps_loop()
 {
     unsigned long lock = millis() + 2;
@@ -26,6 +33,8 @@ int getGPS()
     unsigned long time = millis() + 1200;
     while (!gps_valid() && time > millis())
         gps_loop();
+
+    end_gps();
 
     if (!gps_valid()) // no GPS
     {

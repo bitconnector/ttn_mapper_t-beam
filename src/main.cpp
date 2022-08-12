@@ -80,6 +80,7 @@ void setup()
     Serial.println(F("Wakeup caused by reset"));
     delay(3000);
     setup_axp();
+    end_gps();
     startup_lorawan();
     sendStatus(2, 0);
     setSleepTimer(TX_INTERVAL);
