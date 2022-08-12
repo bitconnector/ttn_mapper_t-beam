@@ -45,19 +45,22 @@ void setup_axp()
 
 void axp_gps(uint8_t state)
 {
-    switch (state)
+
+    if (state == 0) // disable GPS
     {
-    case 1:
-        axp.setPowerOutPut(AXP192_LDO3, AXP202_ON); // GPS
-        axp.setLDO3Voltage(3000);
-        break;
-    case 2:
-        axp.setPowerOutPut(AXP192_LDO3, AXP202_ON); // GPS
-        axp.setLDO3Voltage(2500);
-        break;
-    default:
-        axp.setPowerOutPut(AXP192_LDO3, AXP202_OFF); // GPS
+        if (axp.isLDO3Enable())
+            axp.setPowerOutPut(AXP192_LDO3, AXP202_OFF); // GPS
+        return;
     }
+
+    uint16_t voltage = 3000;
+    if (state == 2)
+        voltage = 2500;
+
+    if (!axp.isLDO3Enable())
+        axp.setPowerOutPut(AXP192_LDO3, AXP202_ON); // GPS
+    if (axp.getLDO3Voltage() != voltage)
+        axp.setLDO3Voltage(voltage);
 }
 
 void axp_lora(bool state)
