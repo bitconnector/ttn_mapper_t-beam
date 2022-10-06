@@ -21,28 +21,23 @@ void startup_lorawan()
         Serial.print("Joining");
         while (!joined)
         {
-            long frequency = getFrequency();
-            lora_tx(frequency, 7);
-
 #ifdef ESP32
             esp_random();
 #endif
             otaa.setDevNonce((uint16_t)random(256 * 256));
             otaa.joinmsg();
-            LoRa.beginPacket(); // start packet
-            LoRa.write(message.data, message.dataLen);
-            LoRa.endPacket(); // finish packet and send it
+
+            long frequency = getFrequency();
+            lora_tx(frequency, 7, message.data, message.dataLen);
             unsigned long txTime = millis();
 
             // RX1
             lora_rx(frequency, 7);
             while (txTime + 20000 > millis() && !joined)
             {
-                if (LoRa.parsePacket())
+                message.dataLen = lora_get(message.data);
+                if (message.dataLen > 0)
                 {
-                    message.dataLen = 0;
-                    while (LoRa.available())
-                        message.data[message.dataLen++] = LoRa.read();
                     joined = otaa.checkJoin((char *)message.data, message.dataLen);
                     printPackage((char *)message.data, message.dataLen, 0);
                 }
@@ -66,14 +61,11 @@ void startup_lorawan()
 bool lorawan_send(uint8_t _port, uint8_t *_data, uint8_t _size, bool _confirm, int _sf)
 {
     long frequency = getFrequency();
-    lora_tx(frequency, _sf);
 
     message.uplink((char *)_data, _size, _port, _confirm);
     printPackage((char *)message.data, message.dataLen, 1);
 
-    LoRa.beginPacket(); // start packet
-    LoRa.write(message.data, message.dataLen);
-    LoRa.endPacket(); // finish packet and send it
+    lora_tx(frequency, _sf, message.data, message.dataLen);
 
     if (_confirm)
     {
@@ -103,7 +95,7 @@ long getFrequency()
     return frequency;
 }
 
-void lora_tx(long frequency, int sf)
+void lora_tx(long frequency, int sf, uint8_t *data, uint8_t size)
 {
     LoRa.begin(frequency);
     LoRa.setPreambleLength(8);
@@ -113,6 +105,10 @@ void lora_tx(long frequency, int sf)
     LoRa.setCodingRate4(5);
     LoRa.setSpreadingFactor(sf);
     LoRa.setSignalBandwidth(125E3);
+
+    LoRa.beginPacket(); // start packet
+    LoRa.write(data, size);
+    LoRa.endPacket(); // finish packet and send it
 }
 
 void lora_rx(long frequency, int sf)
@@ -125,6 +121,17 @@ void lora_rx(long frequency, int sf)
     LoRa.setCodingRate4(5);
     LoRa.setSpreadingFactor(sf);
     LoRa.setSignalBandwidth(125E3);
+}
+
+uint8_t lora_get(uint8_t *_data)
+{
+    uint8_t size = 0;
+    if (LoRa.parsePacket())
+    {
+        while (LoRa.available())
+            _data[size++] = LoRa.read();
+    }
+    return size;
 }
 
 void printPackage(char *data, uint16_t size, bool structure)
