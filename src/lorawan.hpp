@@ -2,9 +2,15 @@
 #include <Arduino.h>
 
 #include <LoraWANactivation.hpp>
-#include <LoRa.h>
-
 #include "config.hpp"
+
+#ifdef CUBECELL
+#include "LoRaWan_APP.h"
+extern int16_t Rssi, rxSize;
+extern char *rxpacket;
+#else
+#include <LoRa.h>
+#endif
 
 extern unsigned char Buffer[235];
 extern SLEEP_VAR LoraWANmessage message;

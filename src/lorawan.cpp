@@ -4,9 +4,21 @@ unsigned char Buffer[235];
 SLEEP_VAR LoraWANmessage message;
 SLEEP_VAR bool joined = 0;
 
+#ifdef CUBECELL
+int16_t Rssi, rxSize;
+char *rxpacket = (char *)&message.data;
+void OnRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr);
+#endif
+
 void startup_lorawan()
 {
+#ifdef CUBECELL
+    static RadioEvents_t RadioEvents;
+    RadioEvents.RxDone = OnRxDone;
+    Radio.Init(&RadioEvents);
+#else
     LoRa.setPins(LoRa_CS, LoRa_RST, LoRa_DIO0);
+#endif
 
 #ifdef USE_OTAA
     if (joined == 0)
@@ -82,17 +94,61 @@ void printHex2(unsigned v)
     Serial.print(v, HEX);
 }
 
-void lorawan_sleep()
-{
-    LoRa.sleep();
-}
-
 long getFrequency()
 {
     uint16_t frequencylist[] = {8681, 8683, 8685, 8671, 8673, 8675, 8677, 8679};
     uint8_t idx = message.frameCounterUp % (sizeof(frequencylist) / sizeof(uint16_t));
     long frequency = frequencylist[idx] * 100000;
     return frequency;
+}
+
+#ifdef CUBECELL
+void lorawan_sleep()
+{
+    Radio.Sleep();
+}
+
+void lora_tx(long frequency, int sf, uint8_t *data, uint8_t size)
+{
+    Radio.SetChannel(frequency);
+    Radio.SetTxConfig(MODEM_LORA, 20, 0, 0,
+                      sf, 1,
+                      8, false,
+                      true, 0, 0, false, 0);
+    Radio.SetSyncWord(0x34);
+
+    Radio.Send(data, size);
+}
+
+void OnRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr)
+{
+    Rssi = rssi;
+    rxSize = size;
+    memcpy(message.data, payload, size);
+    rxpacket[size] = '\0';
+}
+
+void lora_rx(long frequency, int sf)
+{
+    Radio.SetChannel(frequency);
+    Radio.SetRxConfig(MODEM_LORA, 0, sf,
+                      1, 0, 8,
+                      0, false,
+                      0, false, 0, 0, true, true);
+    Radio.Rx(0);
+    rxSize = 0;
+}
+
+uint8_t lora_get(uint8_t *_data)
+{
+    uint8_t size = rxSize;
+    rxSize = 0;
+    return size;
+}
+#else
+void lorawan_sleep()
+{
+    LoRa.sleep();
 }
 
 void lora_tx(long frequency, int sf, uint8_t *data, uint8_t size)
@@ -133,6 +189,7 @@ uint8_t lora_get(uint8_t *_data)
     }
     return size;
 }
+#endif
 
 void printPackage(char *data, uint16_t size, bool structure)
 {
