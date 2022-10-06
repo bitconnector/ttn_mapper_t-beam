@@ -15,6 +15,7 @@ function decodeUplink(input) {
         data.bat += 250
         data.bat /= 100
         data.percentage = ((data.bat - bat_min) / (bat_max - bat_min)) * 100 | 0
+        if (data.percentage > 100) data.percentage = 100;
         batState = "bat: " + data.percentage + "% " + data.bat + "V";
     }
     ptr = ptr + 1;

@@ -33,7 +33,7 @@ void setup_axp()
 
     axp.setLDO2Voltage(2000);  // LoRa VDD
     axp.setLDO3Voltage(3000);  // GPS
-    axp.setDCDC3Voltage(2500); // lower ESP32 voltage
+    axp.setDCDC3Voltage(2600); // lower ESP32 voltage
 
     axp_gps(1);
     axp_lora(1);
@@ -100,7 +100,7 @@ void axp_sleep()
 
 uint8_t vbatt_bin(uint8_t *txBuffer, uint8_t offset)
 {
-    if (!axp.isVBUSPlug() && axp.isBatteryConnect())
+    if (axp.isBatteryConnect())
         txBuffer[offset] = (axp.getBattVoltage() / 10) - 250;
     else
         txBuffer[offset] = 0xff;

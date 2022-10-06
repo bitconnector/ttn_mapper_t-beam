@@ -2,6 +2,10 @@
 #include <Arduino.h>
 #include <TinyGPS++.h>
 
+#include "soc/rtc_cntl_reg.h"
+#include "soc/rtc.h"
+#include "driver/rtc_io.h"
+
 #include "config.hpp"
 
 extern TinyGPSPlus gps;
@@ -11,6 +15,7 @@ extern RTC_DATA_ATTR double last_lat;
 extern RTC_DATA_ATTR double last_lng;
 
 void setup_gps();
+void end_gps();
 void gps_loop();
 int getGPS();
 bool gps_valid();
