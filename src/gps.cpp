@@ -1,16 +1,29 @@
 #include "gps.hpp"
 
 TinyGPSPlus gps;
+#ifndef CUBECELL
 HardwareSerial serialGPS(1);
+#else
+Air530Class serialGPS;
+#endif
 
 void setup_gps()
 {
+#ifndef CUBECELL
     serialGPS.begin(9600, SERIAL_8N1, GPS_RX, GPS_TX);
+#else
+    serialGPS.begin();
+#endif
 }
 
 void end_gps()
 {
+#ifndef CUBECELL
     serialGPS.end();
+#else
+    serialGPS.end();
+#endif
+
 #ifdef ESP32
     digitalWrite(GPS_TX, HIGH);
     gpio_hold_en((gpio_num_t)GPS_TX);
