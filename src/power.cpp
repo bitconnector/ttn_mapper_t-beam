@@ -1,3 +1,4 @@
+#ifdef AXP
 #include "power.hpp"
 
 AXP20X_Class axp;
@@ -108,3 +109,4 @@ uint8_t vbatt_bin(uint8_t *txBuffer, uint8_t offset)
         txBuffer[offset] = 0xff;
     return offset + 1;
 }
+#endif
