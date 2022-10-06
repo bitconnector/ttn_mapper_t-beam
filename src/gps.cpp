@@ -11,8 +11,10 @@ void setup_gps()
 void end_gps()
 {
     serialGPS.end();
+#ifdef ESP32
     digitalWrite(GPS_TX, HIGH);
     gpio_hold_en((gpio_num_t)GPS_TX);
+#endif
 }
 
 void gps_loop()
@@ -64,8 +66,8 @@ bool gps_valid()
         return false;
 }
 
-RTC_DATA_ATTR double last_lat;
-RTC_DATA_ATTR double last_lng;
+SLEEP_VAR double last_lat;
+SLEEP_VAR double last_lng;
 bool gps_moved(int meter)
 {
     if (gps.distanceBetween(gps.location.lat(), gps.location.lng(), last_lat, last_lng) < meter)

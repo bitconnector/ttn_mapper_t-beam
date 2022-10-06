@@ -11,7 +11,7 @@ https://randomnerdtutorials.com/esp32-deep-sleep-arduino-ide-wake-up-sources/
 #include "config.hpp"
 
 unsigned int TX_INTERVAL = GPS_INTERVAL;
-RTC_DATA_ATTR int wakeup_count = 0;
+SLEEP_VAR int wakeup_count = 0;
 
 void sendLocation();
 void sendStatus(int state, int gps);

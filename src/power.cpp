@@ -94,8 +94,10 @@ uint8_t axp_cause()
 
 void axp_sleep()
 {
+#ifdef ESP32
     detachInterrupt(digitalPinToInterrupt(AXP_IRQ));
     esp_sleep_enable_ext0_wakeup((gpio_num_t)AXP_IRQ, 0);
+#endif
 }
 
 uint8_t vbatt_bin(uint8_t *txBuffer, uint8_t offset)

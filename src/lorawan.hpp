@@ -7,8 +7,8 @@
 #include "config.hpp"
 
 extern unsigned char Buffer[235];
-extern RTC_DATA_ATTR LoraWANmessage message;
-extern RTC_DATA_ATTR bool joined;
+extern SLEEP_VAR LoraWANmessage message;
+extern SLEEP_VAR bool joined;
 
 void startup_lorawan();
 bool lorawan_send(uint8_t _port, uint8_t *_data, uint8_t _size, bool _confirm, int _sf);

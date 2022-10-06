@@ -1,8 +1,8 @@
 #include "lorawan.hpp"
 
 unsigned char Buffer[235];
-RTC_DATA_ATTR LoraWANmessage message;
-RTC_DATA_ATTR bool joined = 0;
+SLEEP_VAR LoraWANmessage message;
+SLEEP_VAR bool joined = 0;
 
 void startup_lorawan()
 {
@@ -24,7 +24,9 @@ void startup_lorawan()
             long frequency = getFrequency();
             lora_tx(frequency, 7);
 
+#ifdef ESP32
             esp_random();
+#endif
             otaa.setDevNonce((uint16_t)random(256 * 256));
             otaa.joinmsg();
             LoRa.beginPacket(); // start packet
