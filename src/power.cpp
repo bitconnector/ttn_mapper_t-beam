@@ -101,7 +101,7 @@ void axp_sleep()
 uint8_t vbatt_bin(uint8_t *txBuffer, uint8_t offset)
 {
     if (axp.isBatteryConnect())
-        txBuffer[offset] = (axp.getBattVoltage() / 10) - 250;
+        txBuffer[offset] = (axp.getBattVoltage() * 100) - 250;
     else
         txBuffer[offset] = 0xff;
     return offset + 1;
