@@ -7,9 +7,7 @@ https://randomnerdtutorials.com/esp32-deep-sleep-arduino-ide-wake-up-sources/
 
 #include "gps.hpp"
 #include "lorawan.hpp"
-#ifdef ESP32
 #include "power.hpp"
-#endif
 #include "config.hpp"
 
 unsigned int TX_INTERVAL = GPS_INTERVAL;
@@ -18,7 +16,6 @@ SLEEP_VAR int wakeup_count = 0;
 void sendLocation();
 void sendStatus(int state, int gps);
 
-#ifdef ESP32
 void setSleepTimer(int seconds);
 void enterSleep();
 
@@ -112,76 +109,6 @@ void enterSleep()
   Serial.flush();
   esp_deep_sleep_start();
 }
-#else
-void setup()
-{
-  pinMode(Vext, OUTPUT);
-  pinMode(ButtonPin, INPUT);
-  Serial.begin(115200);
-  // digitalWrite(Vext, LOW);
-
-  lorawan_sleep();
-
-  Serial.println(F("Startup"));
-  delay(3000);
-  startup_lorawan();
-  // sendStatus(2, 0);
-}
-
-void loop()
-{
-  while (true)
-  {
-    Serial.printf("%i, %u\n", !digitalRead(ButtonPin), millis());
-    delay(100);
-  }
-  if (digitalRead(ButtonPin)) // <-------------- timer
-  {
-    Serial.println(F("Wakeup caused by timer"));
-    int gpsStatus = getGPS();
-
-    if (wakeup_count % STATUS_INTERVAL == 0)
-    {
-      Serial.println(F("periodically send state"));
-      sendStatus(4, gpsStatus);
-    }
-    if (gpsStatus == 1)
-      sendLocation();
-    // setSleepTimer(TX_INTERVAL);
-  }
-  else if (false) // <---------- interrupt
-  {
-    Serial.println(F("Wakeup caused by axp"));
-    uint8_t cause = 1;
-    if (cause == 1) // <----------------------------- short press power
-    {
-      Serial.println(F("send status and location"));
-      int gpsStatus = getGPS();
-      sendStatus(1, gpsStatus);
-      if (gpsStatus == 1 || gpsStatus == 2)
-        sendLocation();
-    }
-    else if (cause == 2) // <------------------------- long press power
-    {
-      Serial.print(F("entering deep sleep for infinity\n"));
-      // axp_gps(0); // turn GPS off
-      sendStatus(3, 0);
-      digitalWrite(LED, HIGH); // turn the LED off
-      // enterSleep();            // enter sleep without timer
-    }
-  }
-
-  Serial.println("enter sleep");
-
-  wakeup_count++;
-}
-
-uint8_t vbatt_bin(uint8_t *txBuffer, uint8_t offset)
-{
-  txBuffer[offset] = (getBatteryVoltage() / 10) - 250;
-  return offset + 1;
-}
-#endif
 
 void sendLocation()
 {
