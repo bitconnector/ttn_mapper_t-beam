@@ -31,6 +31,8 @@ void setup()
   digitalWrite(LED, LOW); // LED on
   startup_axp();
 
+  Serial.println(axp.getBattVoltage());
+
   esp_sleep_wakeup_cause_t wakeup_reason =
       esp_sleep_get_wakeup_cause();
   if (wakeup_reason == ESP_SLEEP_WAKEUP_TIMER) // <-------------- timer
@@ -113,22 +115,27 @@ void enterSleep()
 #else
 void setup()
 {
-  pinMode(LED, OUTPUT);
+  pinMode(Vext, OUTPUT);
   pinMode(ButtonPin, INPUT);
   Serial.begin(115200);
-  digitalWrite(LED, LOW); // LED on
+  // digitalWrite(Vext, LOW);
+
+  lorawan_sleep();
 
   Serial.println(F("Startup"));
   delay(3000);
-  end_gps();
   startup_lorawan();
-  sendStatus(2, 0);
-  // setSleepTimer(TX_INTERVAL);
+  // sendStatus(2, 0);
 }
 
 void loop()
 {
-  if (true) // <-------------- timer
+  while (true)
+  {
+    Serial.printf("%i, %u\n", !digitalRead(ButtonPin), millis());
+    delay(100);
+  }
+  if (digitalRead(ButtonPin)) // <-------------- timer
   {
     Serial.println(F("Wakeup caused by timer"));
     int gpsStatus = getGPS();
@@ -164,7 +171,8 @@ void loop()
     }
   }
 
-  pinMode(LED, INPUT_PULLDOWN); // let the LED glim
+  Serial.println("enter sleep");
+
   wakeup_count++;
 }
 

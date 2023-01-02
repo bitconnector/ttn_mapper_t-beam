@@ -43,12 +43,15 @@ void gps_loop()
 
 int getGPS()
 {
+    Serial.println("GPS-setup");
     setup_gps();
 
+    Serial.println("GPS-loop");
     unsigned long time = millis() + 1200;
     while (!gps_valid() && time > millis())
         gps_loop();
 
+    Serial.println("GPS-end");
     end_gps();
 
     if (!gps_valid()) // no GPS

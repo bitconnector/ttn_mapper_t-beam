@@ -15,6 +15,9 @@ void startup_lorawan()
 #ifdef CUBECELL
     static RadioEvents_t RadioEvents;
     RadioEvents.RxDone = OnRxDone;
+    // Radio.IrqProcess(); // -> wie yield
+    Serial.println(Radio.Random());
+    // Radio.SetModem(RadioModems_t::MODEM_LORA);
     Radio.Init(&RadioEvents);
 #else
     LoRa.setPins(LoRa_CS, LoRa_RST, LoRa_DIO0);
