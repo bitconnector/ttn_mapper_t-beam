@@ -1,8 +1,9 @@
 #include "LoRaWan_APP.h"
 #include "Arduino.h"
 
+#define CUBECELL
 //#include "gps.hpp"
-//#include "lorawan.hpp"
+#include "lorawan.hpp"
 #include "config.hpp"
 
 unsigned int TX_INTERVAL = GPS_INTERVAL;
@@ -22,8 +23,8 @@ void setup()
 
   Serial.println(F("Startup"));
   delay(3000);
-  //startup_lorawan();
-  // sendStatus(2, 0);
+  startup_lorawan();
+  sendStatus(2, 0);
 }
 
 void loop()
@@ -36,7 +37,7 @@ void loop()
   if (digitalRead(ButtonPin)) // <-------------- timer
   {
     Serial.println(F("Wakeup caused by timer"));
-    int gpsStatus = 0;//getGPS();
+    int gpsStatus = 0; //getGPS();
 
     if (wakeup_count % STATUS_INTERVAL == 0)
     {
@@ -54,7 +55,7 @@ void loop()
     if (cause == 1) // <----------------------------- short press power
     {
       Serial.println(F("send status and location"));
-      int gpsStatus = 0;//getGPS();
+      int gpsStatus = 0; //getGPS();
       sendStatus(1, gpsStatus);
       if (gpsStatus == 1 || gpsStatus == 2)
         sendLocation();
@@ -82,18 +83,18 @@ uint8_t vbatt_bin(uint8_t *txBuffer, uint8_t offset)
 
 void sendLocation()
 {
-  //startup_lorawan();
+  startup_lorawan();
   uint8_t txBuffer[14];
   uint8_t bufferSize = 0;
   uint8_t port = 21;
   bufferSize = vbatt_bin(txBuffer, bufferSize); // get battery level
   //bufferSize = location_bin(txBuffer, bufferSize);
-  //lorawan_send(port, txBuffer, bufferSize, 0, LORAWAN_DEFAULT_SF);
+  lorawan_send(port, txBuffer, bufferSize, 0, LORAWAN_DEFAULT_SF);
 }
 
 void sendStatus(int state, int gps)
 {
-  //startup_lorawan();
+  startup_lorawan();
   uint8_t txBuffer[14];
   uint8_t bufferSize = 0;
   uint8_t port = 1;
@@ -102,5 +103,5 @@ void sendStatus(int state, int gps)
   bufferSize++;
   txBuffer[bufferSize] = gps;
   bufferSize++;
-  //lorawan_send(port, txBuffer, bufferSize, 0, STATUS_SF);
+  lorawan_send(port, txBuffer, bufferSize, 0, STATUS_SF);
 }
