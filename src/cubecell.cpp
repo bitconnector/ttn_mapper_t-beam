@@ -1,7 +1,10 @@
+//https://github.com/HelTecAutomation/CubeCell-Arduino/blob/master/libraries/Basics/examples/LowPower/LowPower_WakeUpByGPIO/LowPower_WakeUpByGPIO.ino
 #include "LoRaWan_APP.h"
 #include "Arduino.h"
 
 #define CUBECELL
+//#define ButtonPin
+
 //#include "gps.hpp"
 #include "lorawan.hpp"
 #include "config.hpp"
@@ -19,7 +22,7 @@ void setup()
   Serial.begin(115200);
   // digitalWrite(Vext, LOW);
 
-  //lorawan_sleep();
+  lorawan_sleep();
 
   Serial.println(F("Startup"));
   delay(3000);
@@ -28,6 +31,26 @@ void setup()
 }
 
 void loop()
+{
+  if (digitalRead(ButtonPin) == 0) //Interrupt wakeup
+  {
+    unsigned long buttonHold = millis();
+    while (digitalRead(ButtonPin) == 0)
+      ;
+    buttonHold = millis() - buttonHold;
+    if (buttonHold < 1000) //short press
+    {
+    }
+    if (buttonHold < 2500) //long press
+    {
+    }
+  }
+  else //Timer wakeup
+  {
+  }
+}
+
+void loop2()
 {
   while (true)
   {
