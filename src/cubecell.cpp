@@ -15,6 +15,13 @@ int wakeup_count = 0;
 void sendLocation();
 void sendStatus(int state, int gps);
 
+static TimerEvent_t sleep;
+uint8_t lowpower = 0;
+void onWakeUp()
+{
+  lowpower = 0;
+}
+
 void setup()
 {
   pinMode(Vext, OUTPUT);
@@ -23,31 +30,45 @@ void setup()
   // digitalWrite(Vext, LOW);
 
   lorawan_sleep();
+  attachInterrupt(ButtonPin, onWakeUp, FALLING);
+  TimerInit(&sleep, onWakeUp);
 
-  Serial.println(F("Startup"));
+  Serial.printf("Startup\n");
   delay(3000);
-  startup_lorawan();
-  sendStatus(2, 0);
+  //startup_lorawan();
+  //sendStatus(2, 0);
 }
 
 void loop()
 {
+  TimerStop(&sleep);
   if (digitalRead(ButtonPin) == 0) //Interrupt wakeup
   {
+    Serial.printf("button ");
     unsigned long buttonHold = millis();
     while (digitalRead(ButtonPin) == 0)
       ;
     buttonHold = millis() - buttonHold;
     if (buttonHold < 1000) //short press
     {
+      Serial.printf("short\n");
     }
-    if (buttonHold < 2500) //long press
+    else if (buttonHold < 2500) //long press
     {
+      Serial.printf("long\n");
     }
   }
   else //Timer wakeup
   {
+    Serial.printf("timer\n");
   }
+  TimerSetValue(&sleep, 5000);
+  TimerStart(&sleep);
+  Serial.flush();
+  delay(300);
+  lowpower = 1;
+  while (lowpower)
+    lowPowerHandler();
 }
 
 void loop2()
