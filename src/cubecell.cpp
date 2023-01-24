@@ -27,7 +27,7 @@ void setup()
   pinMode(Vext, OUTPUT);
   pinMode(ButtonPin, INPUT);
   Serial.begin(115200);
-  // digitalWrite(Vext, LOW);
+  // digitalWrite(Vext, LOW); // OLED
 
   lorawan_sleep();
   attachInterrupt(ButtonPin, onWakeUp, FALLING);
@@ -35,16 +35,17 @@ void setup()
 
   Serial.printf("Startup\n");
   delay(3000);
-  //startup_lorawan();
-  //sendStatus(2, 0);
+
+  setup_gps();
+  while (0)
+    gps_loop();
+
+  startup_lorawan();
+  sendStatus(2, 0);
 }
 
 void loop()
 {
-  setup_gps();
-  while (1)
-    gps_loop();
-
   TimerStop(&sleep);
   if (digitalRead(ButtonPin) == 0) //Interrupt wakeup
   {
@@ -56,37 +57,34 @@ void loop()
     if (buttonHold < 1000) //short press
     {
       Serial.printf("short\n");
+      Serial.println(F("send status and location"));
+      int gpsStatus = getGPS();
+      sendStatus(1, gpsStatus);
+      if (gpsStatus == 1 || gpsStatus == 2)
+        sendLocation();
+      TimerSetValue(&sleep, TX_INTERVAL * 1000);
+      TimerStart(&sleep);
     }
     else if (buttonHold < 2500) //long press
     {
       Serial.printf("long\n");
+      Serial.print(F("entering deep sleep for infinity\n"));
+      end_gps();
+
+      Serial.flush();
+      delay(300);
+      lowpower = 1;
+      while (lowpower)
+        lowPowerHandler();
+
+      setup_gps();
     }
   }
   else //Timer wakeup
   {
     Serial.printf("timer\n");
-  }
-  TimerSetValue(&sleep, 5000);
-  TimerStart(&sleep);
-  Serial.flush();
-  delay(300);
-  lowpower = 1;
-  while (lowpower)
-    lowPowerHandler();
-}
-
-void loop2()
-{
-  while (true)
-  {
-    Serial.printf("%i, %u\n", !digitalRead(ButtonPin), millis());
-    delay(100);
-  }
-  if (digitalRead(ButtonPin)) // <-------------- timer
-  {
     Serial.println(F("Wakeup caused by timer"));
-    int gpsStatus = 0; //getGPS();
-
+    int gpsStatus = getGPS();
     if (wakeup_count % STATUS_INTERVAL == 0)
     {
       Serial.println(F("periodically send state"));
@@ -94,32 +92,14 @@ void loop2()
     }
     if (gpsStatus == 1)
       sendLocation();
-    // setSleepTimer(TX_INTERVAL);
+    TimerSetValue(&sleep, TX_INTERVAL * 1000);
+    TimerStart(&sleep);
   }
-  else if (false) // <---------- interrupt
-  {
-    Serial.println(F("Wakeup caused by axp"));
-    uint8_t cause = 1;
-    if (cause == 1) // <----------------------------- short press power
-    {
-      Serial.println(F("send status and location"));
-      int gpsStatus = 0; //getGPS();
-      sendStatus(1, gpsStatus);
-      if (gpsStatus == 1 || gpsStatus == 2)
-        sendLocation();
-    }
-    else if (cause == 2) // <------------------------- long press power
-    {
-      Serial.print(F("entering deep sleep for infinity\n"));
-      // axp_gps(0); // turn GPS off
-      sendStatus(3, 0);
-      digitalWrite(LED, HIGH); // turn the LED off
-      // enterSleep();            // enter sleep without timer
-    }
-  }
-
-  Serial.println("enter sleep");
-
+  Serial.flush();
+  delay(300);
+  lowpower = 1;
+  while (lowpower)
+    lowPowerHandler();
   wakeup_count++;
 }
 

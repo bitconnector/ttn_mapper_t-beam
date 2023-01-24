@@ -18,11 +18,7 @@ void setup_gps()
 
 void end_gps()
 {
-#ifndef CUBECELL
     serialGPS.end();
-#else
-    serialGPS.end();
-#endif
 
 #ifdef ESP32
     digitalWrite(GPS_TX, HIGH);
