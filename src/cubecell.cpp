@@ -5,7 +5,7 @@
 #define CUBECELL
 //#define ButtonPin
 
-//#include "gps.hpp"
+#include "gps.hpp"
 #include "lorawan.hpp"
 #include "config.hpp"
 
@@ -41,6 +41,10 @@ void setup()
 
 void loop()
 {
+  setup_gps();
+  while (1)
+    gps_loop();
+
   TimerStop(&sleep);
   if (digitalRead(ButtonPin) == 0) //Interrupt wakeup
   {

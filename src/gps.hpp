@@ -9,8 +9,10 @@
 #endif
 
 #ifdef CUBECELL
-#include "GPS_Air530.h"
 #include "LoRaWan_APP.h"
+#include "GPS_Air530.h"
+#include "GPS_Air530Z.h"
+
 extern Air530Class serialGPS;
 #else
 extern HardwareSerial serialGPS;
