@@ -41,18 +41,18 @@ void startup_lorawan()
             otaa.joinmsg();
 
             long frequency = getFrequency();
-            lora_tx(frequency, 8, message.data, message.dataLen);
+            lora_tx(frequency, JOIN_SF, message.data, message.dataLen);
             unsigned long txTime = millis();
 
             // RX1
-            lora_rx(frequency, 8);
+            lora_rx(frequency, JOIN_SF);
             while (txTime + 20000 > millis() && !joined)
             {
                 if (!lora_busy())
                 {
                     joined = otaa.checkJoin((char *)message.data, message.dataLen);
                     printPackage((char *)message.data, message.dataLen, 0);
-                    lora_rx(frequency, 8);
+                    lora_rx(frequency, JOIN_SF);
                 }
             }
             Serial.print(".");

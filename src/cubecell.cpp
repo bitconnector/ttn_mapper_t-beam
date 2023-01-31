@@ -116,7 +116,7 @@ void sendLocation()
   uint8_t bufferSize = 0;
   uint8_t port = 21;
   bufferSize = vbatt_bin(txBuffer, bufferSize); // get battery level
-  //bufferSize = location_bin(txBuffer, bufferSize);
+  bufferSize = location_bin(txBuffer, bufferSize);
   lorawan_send(port, txBuffer, bufferSize, 0, LORAWAN_DEFAULT_SF);
 }
 
