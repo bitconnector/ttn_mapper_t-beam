@@ -5,22 +5,23 @@ SLEEP_VAR LoraWANmessage message;
 SLEEP_VAR bool joined = 0;
 
 #ifdef CUBECELL
-int16_t Rssi, rxSize;
-char *rxpacket = (char *)&message.data;
-void OnRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr);
+int16_t Rssi;
+bool radioBusy = 0;
+RadioEvents_t RadioEvents;
 #endif
 
 void startup_lorawan()
 {
 #ifdef CUBECELL
-    static RadioEvents_t RadioEvents;
+    RadioEvents.TxDone = OnTxDone;
+    RadioEvents.TxTimeout = OnTxTimeout;
     RadioEvents.RxDone = OnRxDone;
-    // Radio.IrqProcess(); // -> wie yield
-    Serial.println(Radio.Random());
-    // Radio.SetModem(RadioModems_t::MODEM_LORA);
     Radio.Init(&RadioEvents);
 #else
     LoRa.setPins(LoRa_CS, LoRa_RST, LoRa_DIO0);
+#endif
+#ifdef ESP32
+    esp_random();
 #endif
 
 #ifdef USE_OTAA
@@ -36,29 +37,27 @@ void startup_lorawan()
         Serial.print("Joining");
         while (!joined)
         {
-#ifdef ESP32
-            esp_random();
-#endif
             otaa.setDevNonce((uint16_t)random(256 * 256));
             otaa.joinmsg();
 
             long frequency = getFrequency();
-            lora_tx(frequency, 7, message.data, message.dataLen);
+            lora_tx(frequency, 8, message.data, message.dataLen);
             unsigned long txTime = millis();
 
             // RX1
-            lora_rx(frequency, 7);
+            lora_rx(frequency, 8);
             while (txTime + 20000 > millis() && !joined)
             {
-                message.dataLen = lora_get(message.data);
-                if (message.dataLen > 0)
+                if (!lora_busy())
                 {
                     joined = otaa.checkJoin((char *)message.data, message.dataLen);
                     printPackage((char *)message.data, message.dataLen, 0);
+                    lora_rx(frequency, 8);
                 }
             }
             Serial.print(".");
         }
+        lorawan_sleep();
         Serial.println("success!");
     }
 #else
@@ -113,40 +112,62 @@ void lorawan_sleep()
 
 void lora_tx(long frequency, int sf, uint8_t *data, uint8_t size)
 {
+    Serial.printf("sending packet\n");
     Radio.SetChannel(frequency);
     Radio.SetTxConfig(MODEM_LORA, 20, 0, 0,
                       sf, 1,
                       8, false,
-                      true, 0, 0, false, 0);
+                      true, 0, 0, false, 3000);
     Radio.SetSyncWord(0x34);
-
+    radioBusy = 1;
     Radio.Send(data, size);
+    while (radioBusy)
+        Radio.IrqProcess();
 }
 
 void OnRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr)
 {
+    Serial.println("RX callback");
     Rssi = rssi;
-    rxSize = size;
+    message.dataLen = size;
     memcpy(message.data, payload, size);
-    rxpacket[size] = '\0';
+    Radio.Sleep();
+    Serial.printf("\r\nreceived packet \"%s\" with Rssi %d , length %d\r\n", payload, Rssi, size);
+    Serial.println("wait to send next packet");
+
+    radioBusy = 0;
+}
+
+void OnTxDone(void)
+{
+    Serial.print("TX done......");
+    radioBusy = 0;
+}
+
+void OnTxTimeout(void)
+{
+    Radio.Sleep();
+    Serial.print("TX Timeout......");
+    radioBusy = 0;
 }
 
 void lora_rx(long frequency, int sf)
 {
+    Serial.println("into RX mode");
     Radio.SetChannel(frequency);
     Radio.SetRxConfig(MODEM_LORA, 0, sf,
                       1, 0, 8,
                       0, false,
                       0, false, 0, 0, true, true);
+    Radio.SetSyncWord(0x34);
+    radioBusy = 1;
     Radio.Rx(0);
-    rxSize = 0;
 }
 
-uint8_t lora_get(uint8_t *_data)
+bool lora_busy()
 {
-    uint8_t size = rxSize;
-    rxSize = 0;
-    return size;
+    Radio.IrqProcess();
+    return radioBusy;
 }
 #else
 void lorawan_sleep()
@@ -182,15 +203,17 @@ void lora_rx(long frequency, int sf)
     LoRa.setSignalBandwidth(125E3);
 }
 
-uint8_t lora_get(uint8_t *_data)
+bool lora_busy()
 {
     uint8_t size = 0;
     if (LoRa.parsePacket())
     {
         while (LoRa.available())
-            _data[size++] = LoRa.read();
+            message.data[size++] = LoRa.read();
+        message.dataLen = size;
+        return 0;
     }
-    return size;
+    return 1;
 }
 #endif
 
