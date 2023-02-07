@@ -11,10 +11,11 @@ https://randomnerdtutorials.com/esp32-deep-sleep-arduino-ide-wake-up-sources/
 #include "config.hpp"
 
 unsigned int TX_INTERVAL = GPS_INTERVAL;
-RTC_DATA_ATTR int wakeup_count = 0;
+SLEEP_VAR int wakeup_count = 0;
 
 void sendLocation();
 void sendStatus(int state, int gps);
+
 void setSleepTimer(int seconds);
 void enterSleep();
 
@@ -27,11 +28,14 @@ void setup()
   digitalWrite(LED, LOW); // LED on
   startup_axp();
 
+  Serial.println(axp.getBattVoltage());
+
   esp_sleep_wakeup_cause_t wakeup_reason =
       esp_sleep_get_wakeup_cause();
   if (wakeup_reason == ESP_SLEEP_WAKEUP_TIMER) // <-------------- timer
   {
     Serial.println(F("Wakeup caused by timer"));
+    setup_gps();
     int gpsStatus = getGPS();
 
     if (gpsStatus == 0)
@@ -56,6 +60,7 @@ void setup()
     if (cause == 1) // <----------------------------- short press power
     {
       Serial.println(F("send status and location"));
+      setup_gps();
       int gpsStatus = getGPS();
       sendStatus(1, gpsStatus);
       if (gpsStatus == 1 || gpsStatus == 2)
@@ -94,6 +99,19 @@ void loop()
 {
 }
 
+void setSleepTimer(int seconds)
+{
+  esp_sleep_enable_timer_wakeup(seconds * 1000000);
+}
+
+void enterSleep()
+{
+  lorawan_sleep();
+  axp_sleep();
+  Serial.flush();
+  esp_deep_sleep_start();
+}
+
 void sendLocation()
 {
   startup_lorawan();
@@ -117,17 +135,4 @@ void sendStatus(int state, int gps)
   txBuffer[bufferSize] = gps;
   bufferSize++;
   lorawan_send(port, txBuffer, bufferSize, 0, STATUS_SF);
-}
-
-void setSleepTimer(int seconds)
-{
-  esp_sleep_enable_timer_wakeup(seconds * 1000000);
-}
-
-void enterSleep()
-{
-  lorawan_sleep();
-  axp_sleep();
-  Serial.flush();
-  esp_deep_sleep_start();
 }

@@ -6,3 +6,4 @@
 src/config.hpp
 scripts/config.ini
 scripts/*.log
+pio.map
