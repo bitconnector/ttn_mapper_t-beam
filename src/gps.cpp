@@ -40,7 +40,6 @@ void gps_loop()
 int getGPS()
 {
     Serial.println("GPS-setup");
-    setup_gps();
 
     Serial.println("GPS-loop");
     unsigned long time = millis() + 1200;

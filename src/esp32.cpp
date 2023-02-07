@@ -35,6 +35,7 @@ void setup()
   if (wakeup_reason == ESP_SLEEP_WAKEUP_TIMER) // <-------------- timer
   {
     Serial.println(F("Wakeup caused by timer"));
+    setup_gps();
     int gpsStatus = getGPS();
 
     if (gpsStatus == 0)
@@ -59,6 +60,7 @@ void setup()
     if (cause == 1) // <----------------------------- short press power
     {
       Serial.println(F("send status and location"));
+      setup_gps();
       int gpsStatus = getGPS();
       sendStatus(1, gpsStatus);
       if (gpsStatus == 1 || gpsStatus == 2)
