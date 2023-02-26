@@ -39,33 +39,30 @@ void gps_loop()
 
 int getGPS()
 {
-    Serial.println("GPS-setup");
-
     Serial.println("GPS-loop");
     unsigned long time = millis() + 1200;
     while (!gps_valid() && time > millis())
         gps_loop();
 
-    Serial.println("GPS-end");
-    end_gps();
+    Serial.print("GPS-end: ");
 
     if (!gps_valid()) // no GPS
     {
-        Serial.println("\nGPS: no fix");
+        Serial.println("no fix");
         return 0;
     }
     if (gps_geo()) // Geofence
     {
-        Serial.println("\nGPS: geofence");
+        Serial.println("geofence");
         return 3;
     }
     if (!gps_moved(GPS_MOVE_DIST)) // no movement
     {
-        Serial.println("\nGPS: no movement");
+        Serial.println("no movement");
         return 2;
     }
 
-    Serial.println("\nGPS: ok");
+    Serial.println("ok");
     return 1; // GPS ok
 }
 
