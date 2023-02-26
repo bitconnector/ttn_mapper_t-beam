@@ -47,7 +47,6 @@ int getGPS()
         gps_loop();
 
     Serial.println("GPS-end");
-    end_gps();
 
     if (!gps_valid()) // no GPS
     {
