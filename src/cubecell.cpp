@@ -22,7 +22,7 @@ void onWakeUp() { lowpower = 0; }
 static TimerEvent_t deepSleepTimer;
 bool deepSleepEnabled = 0;
 void onDeepSleepTimer() { deepSleepEnabled = 0; }
-void deepSleep(int duration)
+void deepSleep(uint32_t duration)
 {
   TimerInit(&deepSleepTimer, onDeepSleepTimer);
   TimerSetValue(&deepSleepTimer, duration);
@@ -44,11 +44,18 @@ void setup()
   TimerInit(&sleep, onWakeUp);
 
   Serial.printf("Startup\n");
-  delay(3000);
+  deepSleep(3000);
+  Serial.flush();
 
   setup_gps();
   while (0)
-    gps_loop();
+  {
+    Serial.printf("detecting GPS\n");
+    int gpsStatus = getGPS();
+    Serial.printf("sleep\n");
+    deepSleep(5000);
+    Serial.flush();
+  }
 
   startup_lorawan();
   sendStatus(2, 0);
