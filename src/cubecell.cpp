@@ -17,9 +17,19 @@ void sendStatus(int state, int gps);
 
 static TimerEvent_t sleep;
 uint8_t lowpower = 0;
-void onWakeUp()
+void onWakeUp() { lowpower = 0; }
+
+static TimerEvent_t deepSleepTimer;
+bool deepSleepEnabled = 0;
+void onDeepSleepTimer() { deepSleepEnabled = 0; }
+void deepSleep(int duration)
 {
-  lowpower = 0;
+  TimerInit(&deepSleepTimer, onDeepSleepTimer);
+  TimerSetValue(&deepSleepTimer, duration);
+  TimerStart(&deepSleepTimer);
+  deepSleepEnabled = 1;
+  while (deepSleepEnabled)
+    lowPowerHandler();
 }
 
 void setup()
