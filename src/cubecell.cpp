@@ -95,11 +95,11 @@ void loop()
     TimerSetValue(&sleep, TX_INTERVAL * 1000);
     TimerStart(&sleep);
   }
-  Serial.flush();
   delay(300);
   lowpower = 1;
   while (lowpower)
     lowPowerHandler();
+  Serial.flush();
   wakeup_count++;
 }
 
