@@ -9,6 +9,9 @@
 #include "lorawan.hpp"
 #include "config.hpp"
 
+#include "CubeCell_NeoPixel.h"
+CubeCell_NeoPixel pixels(1, RGB, NEO_GRB + NEO_KHZ800);
+
 unsigned int TX_INTERVAL = GPS_INTERVAL;
 int wakeup_count = 0;
 
@@ -36,6 +39,8 @@ void setup()
 {
   pinMode(Vext, OUTPUT);
   pinMode(ButtonPin, INPUT);
+  pixels.begin();
+  pixels.clear();
   Serial.begin(115200);
   // digitalWrite(Vext, LOW); // OLED
 
@@ -57,12 +62,16 @@ void setup()
     Serial.flush();
   }
 
+  pixels.setPixelColor(0, pixels.Color(0, 15, 0));
+  pixels.show();
   startup_lorawan();
   sendStatus(2, 0);
 }
 
 void loop()
 {
+  pixels.setPixelColor(0, pixels.Color(15, 0, 0));
+  pixels.show();
   TimerStop(&sleep);
   if (digitalRead(ButtonPin) == 0) //Interrupt wakeup
   {
@@ -87,6 +96,8 @@ void loop()
       Serial.printf("long\n");
       Serial.print(F("entering deep sleep for infinity\n"));
       end_gps();
+      pixels.clear();
+      pixels.show();
 
       Serial.flush();
       delay(300);
@@ -112,7 +123,8 @@ void loop()
     TimerSetValue(&sleep, TX_INTERVAL * 1000);
     TimerStart(&sleep);
   }
-  delay(300);
+  pixels.setPixelColor(0, pixels.Color(1, 0, 0));
+  pixels.show();
   lowpower = 1;
   while (lowpower)
     lowPowerHandler();
