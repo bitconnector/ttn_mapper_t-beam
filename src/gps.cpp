@@ -44,6 +44,7 @@ int getGPS()
     while (!gps_valid() && time > millis())
         gps_loop();
 
+    Serial.flush();
     Serial.print("GPS-end: ");
 
     if (!gps_valid()) // no GPS
@@ -68,7 +69,7 @@ int getGPS()
 
 bool gps_valid()
 {
-    if (gps.location.isValid() && gps.hdop.isValid() && gps.altitude.isValid())
+    if (gps.location.isValid() && gps.hdop.isValid() && gps.altitude.isValid() && gps.location.age() <= 1200 && gps.hdop.age() <= 1200 && gps.altitude.age() <= 1200)
         return true;
     else
         return false;
