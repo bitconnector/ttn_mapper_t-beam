@@ -106,6 +106,8 @@ void loop()
         lowPowerHandler();
 
       setup_gps();
+      TimerSetValue(&sleep, TX_INTERVAL * 1000);
+      TimerStart(&sleep);
     }
   }
   else //Timer wakeup
