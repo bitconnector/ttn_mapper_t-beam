@@ -95,6 +95,7 @@ void loop()
     {
       Serial.printf("long\n");
       Serial.print(F("entering deep sleep for infinity\n"));
+      sendStatus(3, 0);
       end_gps();
       pixels.clear();
       pixels.show();
@@ -106,6 +107,7 @@ void loop()
         lowPowerHandler();
 
       setup_gps();
+      sendStatus(1, 0);
       TimerSetValue(&sleep, TX_INTERVAL * 1000);
       TimerStart(&sleep);
     }
