@@ -77,12 +77,12 @@ void loop()
   {
     Serial.printf("button ");
     unsigned long buttonHold = millis();
-    while (digitalRead(ButtonPin) == 0)
+    while (digitalRead(ButtonPin) == 0 && millis() - buttonHold < 1000)
       ;
     buttonHold = millis() - buttonHold;
     if (buttonHold < 1000) //short press
     {
-      Serial.printf("short\n");
+      Serial.printf("buttonHoldshort\n");
       Serial.println(F("send status and location"));
       int gpsStatus = getGPS();
       sendStatus(1, gpsStatus);
@@ -91,7 +91,7 @@ void loop()
       TimerSetValue(&sleep, TX_INTERVAL * 1000);
       TimerStart(&sleep);
     }
-    else if (buttonHold < 2500) //long press
+    else //long press
     {
       Serial.printf("long\n");
       Serial.print(F("entering deep sleep for infinity\n"));
