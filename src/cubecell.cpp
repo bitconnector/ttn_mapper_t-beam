@@ -42,7 +42,7 @@ void setup()
   pixels.begin();
   pixels.clear();
   Serial.begin(115200);
-  // digitalWrite(Vext, LOW); // OLED
+  digitalWrite(Vext, LOW); // OLED and Neo ON
 
   lorawan_sleep();
   attachInterrupt(ButtonPin, onWakeUp, FALLING);
@@ -99,6 +99,7 @@ void loop()
       end_gps();
       pixels.clear();
       pixels.show();
+      digitalWrite(Vext, HIGH); // OLED and Neo OFF
 
       Serial.flush();
       delay(300);
@@ -106,6 +107,10 @@ void loop()
       while (lowpower)
         lowPowerHandler();
 
+      digitalWrite(Vext, LOW); // OLED and Neo ON
+      delay(10);
+      pixels.setPixelColor(0, pixels.Color(15, 0, 0));
+      pixels.show();
       setup_gps();
       sendStatus(1, 0);
       TimerSetValue(&sleep, TX_INTERVAL * 1000);
