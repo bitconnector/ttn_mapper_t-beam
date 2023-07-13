@@ -1,9 +1,8 @@
-//https://github.com/HelTecAutomation/CubeCell-Arduino/blob/master/libraries/Basics/examples/LowPower/LowPower_WakeUpByGPIO/LowPower_WakeUpByGPIO.ino
+// https://github.com/HelTecAutomation/CubeCell-Arduino/blob/master/libraries/Basics/examples/LowPower/LowPower_WakeUpByGPIO/LowPower_WakeUpByGPIO.ino
 #include "LoRaWan_APP.h"
 #include "Arduino.h"
 
 #define CUBECELL
-//#define ButtonPin
 
 #include "gps.hpp"
 #include "lorawan.hpp"
@@ -38,6 +37,7 @@ void deepSleep(uint32_t duration)
 void setup()
 {
   pinMode(Vext, OUTPUT);
+  pinMode(GPIO14, OUTPUT); // VGPS
   pinMode(ButtonPin, INPUT);
   pixels.begin();
   pixels.clear();
@@ -73,14 +73,14 @@ void loop()
   pixels.setPixelColor(0, pixels.Color(15, 0, 0));
   pixels.show();
   TimerStop(&sleep);
-  if (digitalRead(ButtonPin) == 0) //Interrupt wakeup
+  if (digitalRead(ButtonPin) == 0) // Interrupt wakeup
   {
     Serial.printf("button ");
     unsigned long buttonHold = millis();
     while (digitalRead(ButtonPin) == 0 && millis() - buttonHold < 1000)
       ;
     buttonHold = millis() - buttonHold;
-    if (buttonHold < 1000) //short press
+    if (buttonHold < 1000) // short press
     {
       Serial.printf("buttonHoldshort\n");
       Serial.println(F("send status and location"));
@@ -91,7 +91,7 @@ void loop()
       TimerSetValue(&sleep, TX_INTERVAL * 1000);
       TimerStart(&sleep);
     }
-    else //long press
+    else // long press
     {
       Serial.printf("long\n");
       Serial.print(F("entering deep sleep for infinity\n"));
@@ -117,7 +117,7 @@ void loop()
       TimerStart(&sleep);
     }
   }
-  else //Timer wakeup
+  else // Timer wakeup
   {
     Serial.printf("timer\n");
     Serial.println(F("Wakeup caused by timer"));
