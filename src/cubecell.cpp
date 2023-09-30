@@ -58,8 +58,14 @@ void setup()
     Serial.printf("detecting GPS\n");
     int gpsStatus = getGPS();
     Serial.printf("sleep\n");
+    Serial.flush();
     deepSleep(5000);
     Serial.flush();
+    if (!digitalRead(ButtonPin))
+    {
+      digitalWrite(GPIO14, !digitalRead(GPIO14));
+      Serial.printf("\nswitch %s\n", digitalRead(GPIO14) ? "off" : "on");
+    }
   }
 
   pixels.setPixelColor(0, pixels.Color(0, 15, 0));
