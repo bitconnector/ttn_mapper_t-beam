@@ -20,7 +20,9 @@ void setup_gps()
 void end_gps()
 {
     serialGPS.end();
+#ifdef CUBECELL
     digitalWrite(GPIO14, HIGH); // VGPS OFF
+#endif
 #ifdef ESP32
     digitalWrite(GPS_TX, HIGH);
     gpio_hold_en((gpio_num_t)GPS_TX);
