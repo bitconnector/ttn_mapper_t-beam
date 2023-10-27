@@ -126,6 +126,31 @@ void setup_axp()
         // PMU->setPowerChannelVoltage(XPOWERS_DCDC4, 3300);
         // PMU->enablePowerOutput(XPOWERS_DCDC4);
 
+        // lora radio power channel
+        PMU->setPowerChannelVoltage(XPOWERS_ALDO3, 3300);
+        PMU->enablePowerOutput(XPOWERS_ALDO3);
+
+        // m.2 interface
+        PMU->setPowerChannelVoltage(XPOWERS_DCDC3, 3300);
+        PMU->enablePowerOutput(XPOWERS_DCDC3);
+
+        /**
+         * ALDO2 cannot be turned off.
+         * It is a necessary condition for sensor communication.
+         * It must be turned on to properly access the sensor and screen
+         * It is also responsible for the power supply of PCF8563
+         */
+        PMU->setPowerChannelVoltage(XPOWERS_ALDO2, 3300);
+        PMU->enablePowerOutput(XPOWERS_ALDO2);
+
+        // 6-axis , magnetometer ,bme280 , oled screen power channel
+        PMU->setPowerChannelVoltage(XPOWERS_ALDO1, 3300);
+        PMU->enablePowerOutput(XPOWERS_ALDO1);
+
+        // sdcard power channle
+        PMU->setPowerChannelVoltage(XPOWERS_BLDO1, 3300);
+        PMU->enablePowerOutput(XPOWERS_BLDO1);
+
         // not use channel
         PMU->disablePowerOutput(XPOWERS_DCDC2); // not elicited
         PMU->disablePowerOutput(XPOWERS_DCDC5); // not elicited
@@ -167,6 +192,9 @@ void setup_axp()
     PMU->enableIRQ(pmuIrqMask);
 
     PMU->clearIrqStatus();
+
+    axp_lora(1);
+    axp_gps(1);
 }
 
 void axp_gps(uint8_t state)
@@ -284,7 +312,7 @@ uint8_t axp_cause()
 
 void axp_sleep()
 {
-    detachInterrupt(digitalPinToInterrupt(AXP_IRQ));
+    // detachInterrupt(digitalPinToInterrupt(AXP_IRQ));
     esp_sleep_enable_ext0_wakeup((gpio_num_t)AXP_IRQ, 0);
 }
 

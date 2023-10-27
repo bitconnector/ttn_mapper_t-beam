@@ -28,7 +28,8 @@ void setup()
   digitalWrite(LED, LOW); // LED on
   startup_axp();
 
-  Serial.println(axp.getBattVoltage());
+  // Serial.println(axp.getBattVoltage());
+  Serial.println(PMU->getBattVoltage());
 
   esp_sleep_wakeup_cause_t wakeup_reason =
       esp_sleep_get_wakeup_cause();
