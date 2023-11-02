@@ -90,14 +90,6 @@ void setup_axp()
         //  PMU->setPowerChannelVoltage(XPOWERS_DCDC1, 3300);
         //  PMU->setProtectedChannel(XPOWERS_DCDC1);
         PMU->setProtectedChannel(XPOWERS_DCDC1);
-
-        // // LoRa VDD 3300mV
-        // PMU->setPowerChannelVoltage(XPOWERS_ALDO2, 3300);
-        // PMU->enablePowerOutput(XPOWERS_ALDO2);
-
-        // // GNSS VDD 3300mV
-        // PMU->setPowerChannelVoltage(XPOWERS_ALDO3, 3300);
-        // PMU->enablePowerOutput(XPOWERS_ALDO3);
     }
     PMU->enableSystemVoltageMeasure();
     PMU->enableVbusVoltageMeasure();
@@ -145,7 +137,7 @@ void axp_gps(uint8_t state)
         }
         else if (PMU->getChipModel() == XPOWERS_AXP2101)
         {
-            PMU->disablePowerOutput(XPOWERS_ALDO4);
+            PMU->disablePowerOutput(XPOWERS_ALDO3);
         }
         return;
     }
@@ -161,8 +153,8 @@ void axp_gps(uint8_t state)
     }
     else if (PMU->getChipModel() == XPOWERS_AXP2101)
     {
-        PMU->setPowerChannelVoltage(XPOWERS_ALDO4, voltage);
-        PMU->enablePowerOutput(XPOWERS_ALDO4);
+        PMU->setPowerChannelVoltage(XPOWERS_ALDO3, voltage);
+        PMU->enablePowerOutput(XPOWERS_ALDO3);
     }
 }
 
@@ -176,7 +168,7 @@ void axp_lora(bool state)
         }
         else if (PMU->getChipModel() == XPOWERS_AXP2101)
         {
-            PMU->disablePowerOutput(XPOWERS_ALDO3);
+            PMU->disablePowerOutput(XPOWERS_ALDO2);
         }
         return;
     }
@@ -188,8 +180,8 @@ void axp_lora(bool state)
     }
     else if (PMU->getChipModel() == XPOWERS_AXP2101)
     {
-        PMU->setPowerChannelVoltage(XPOWERS_ALDO3, 3300);
-        PMU->enablePowerOutput(XPOWERS_ALDO3);
+        PMU->setPowerChannelVoltage(XPOWERS_ALDO2, 3300);
+        PMU->enablePowerOutput(XPOWERS_ALDO2);
     }
 }
 
@@ -203,7 +195,7 @@ void axp_display(bool state)
         }
         else if (PMU->getChipModel() == XPOWERS_AXP2101)
         {
-            //PMU->disablePowerOutput(XPOWERS_ALDO3);
+            // PMU->disablePowerOutput(XPOWERS_ALDO3);
         }
         return;
     }
@@ -218,6 +210,90 @@ void axp_display(bool state)
         // PMU->setPowerChannelVoltage(XPOWERS_ALDO3, 3300);
         // PMU->enablePowerOutput(XPOWERS_ALDO3);
     }
+}
+
+void axp_print()
+{
+    Serial.print("isCharging:");
+    Serial.println(PMU->isCharging() ? "YES" : "NO");
+    Serial.print("isDischarge:");
+    Serial.println(PMU->isDischarge() ? "YES" : "NO");
+    Serial.print("isVbusIn:");
+    Serial.println(PMU->isVbusIn() ? "YES" : "NO");
+    Serial.print("getBattVoltage:");
+    Serial.print(PMU->getBattVoltage());
+    Serial.println("mV");
+    Serial.print("getVbusVoltage:");
+    Serial.print(PMU->getVbusVoltage());
+    Serial.println("mV");
+    Serial.print("getSystemVoltage:");
+    Serial.print(PMU->getSystemVoltage());
+    Serial.println("mV");
+    // The battery percentage may be inaccurate at first use, the PMU will automatically
+    // learn the battery curve and will automatically calibrate the battery percentage
+    // after a charge and discharge cycle
+    if (PMU->isBatteryConnect())
+    {
+        Serial.print("getBatteryPercent:");
+        Serial.print(PMU->getBatteryPercent());
+        Serial.println("%");
+    }
+    Serial.println();
+
+    Serial.printf("=========================================\n");
+    if (PMU->isChannelAvailable(XPOWERS_DCDC1))
+    {
+        Serial.printf("DC1  : %s   Voltage: %04u mV \n", PMU->isPowerChannelEnable(XPOWERS_DCDC1) ? "+" : "-", PMU->getPowerChannelVoltage(XPOWERS_DCDC1));
+    }
+    if (PMU->isChannelAvailable(XPOWERS_DCDC2))
+    {
+        Serial.printf("DC2  : %s   Voltage: %04u mV \n", PMU->isPowerChannelEnable(XPOWERS_DCDC2) ? "+" : "-", PMU->getPowerChannelVoltage(XPOWERS_DCDC2));
+    }
+    if (PMU->isChannelAvailable(XPOWERS_DCDC3))
+    {
+        Serial.printf("DC3  : %s   Voltage: %04u mV \n", PMU->isPowerChannelEnable(XPOWERS_DCDC3) ? "+" : "-", PMU->getPowerChannelVoltage(XPOWERS_DCDC3));
+    }
+    if (PMU->isChannelAvailable(XPOWERS_DCDC4))
+    {
+        Serial.printf("DC4  : %s   Voltage: %04u mV \n", PMU->isPowerChannelEnable(XPOWERS_DCDC4) ? "+" : "-", PMU->getPowerChannelVoltage(XPOWERS_DCDC4));
+    }
+    if (PMU->isChannelAvailable(XPOWERS_DCDC5))
+    {
+        Serial.printf("DC5  : %s   Voltage: %04u mV \n", PMU->isPowerChannelEnable(XPOWERS_DCDC5) ? "+" : "-", PMU->getPowerChannelVoltage(XPOWERS_DCDC5));
+    }
+    if (PMU->isChannelAvailable(XPOWERS_LDO2))
+    {
+        Serial.printf("LDO2 : %s   Voltage: %04u mV \n", PMU->isPowerChannelEnable(XPOWERS_LDO2) ? "+" : "-", PMU->getPowerChannelVoltage(XPOWERS_LDO2));
+    }
+    if (PMU->isChannelAvailable(XPOWERS_LDO3))
+    {
+        Serial.printf("LDO3 : %s   Voltage: %04u mV \n", PMU->isPowerChannelEnable(XPOWERS_LDO3) ? "+" : "-", PMU->getPowerChannelVoltage(XPOWERS_LDO3));
+    }
+    if (PMU->isChannelAvailable(XPOWERS_ALDO1))
+    {
+        Serial.printf("ALDO1: %s   Voltage: %04u mV \n", PMU->isPowerChannelEnable(XPOWERS_ALDO1) ? "+" : "-", PMU->getPowerChannelVoltage(XPOWERS_ALDO1));
+    }
+    if (PMU->isChannelAvailable(XPOWERS_ALDO2))
+    {
+        Serial.printf("ALDO2: %s   Voltage: %04u mV \n", PMU->isPowerChannelEnable(XPOWERS_ALDO2) ? "+" : "-", PMU->getPowerChannelVoltage(XPOWERS_ALDO2));
+    }
+    if (PMU->isChannelAvailable(XPOWERS_ALDO3))
+    {
+        Serial.printf("ALDO3: %s   Voltage: %04u mV \n", PMU->isPowerChannelEnable(XPOWERS_ALDO3) ? "+" : "-", PMU->getPowerChannelVoltage(XPOWERS_ALDO3));
+    }
+    if (PMU->isChannelAvailable(XPOWERS_ALDO4))
+    {
+        Serial.printf("ALDO4: %s   Voltage: %04u mV \n", PMU->isPowerChannelEnable(XPOWERS_ALDO4) ? "+" : "-", PMU->getPowerChannelVoltage(XPOWERS_ALDO4));
+    }
+    if (PMU->isChannelAvailable(XPOWERS_BLDO1))
+    {
+        Serial.printf("BLDO1: %s   Voltage: %04u mV \n", PMU->isPowerChannelEnable(XPOWERS_BLDO1) ? "+" : "-", PMU->getPowerChannelVoltage(XPOWERS_BLDO1));
+    }
+    if (PMU->isChannelAvailable(XPOWERS_BLDO2))
+    {
+        Serial.printf("BLDO2: %s   Voltage: %04u mV \n", PMU->isPowerChannelEnable(XPOWERS_BLDO2) ? "+" : "-", PMU->getPowerChannelVoltage(XPOWERS_BLDO2));
+    }
+    Serial.printf("=========================================\n");
 }
 
 uint8_t axp_cause()

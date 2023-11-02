@@ -94,16 +94,21 @@ void setup()
     }
 
     unsigned long t = millis();
+    setup_gps();
     while (0)
     {
       axp_gps(1);
       Serial.println("activate");
-      t = millis() + 6000;
+      axp_print();
+      t = millis() + 300000;
+      t = millis() + 120000;
+      //t = millis() + 10000;
       while (t > millis())
         gps_loop();
       axp_gps(0);
       Serial.println("deactivate");
-      t = millis() + 6000;
+      axp_print();
+      t = millis() + 20000;
       while (t > millis())
         gps_loop();
     }
