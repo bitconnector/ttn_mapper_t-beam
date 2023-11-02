@@ -88,13 +88,13 @@ void setup()
     delay(3000);
     setup_axp();
 
-    while(1){
+    while(0){
       setupDisplay();
       delay(10000);
     }
 
     unsigned long t = millis();
-    while (1)
+    while (0)
     {
       axp_gps(1);
       Serial.println("activate");
