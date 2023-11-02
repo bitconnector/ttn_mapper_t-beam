@@ -29,7 +29,6 @@ void setup()
   digitalWrite(LED, LOW); // LED on
   startup_axp();
 
-  // Serial.println(axp.getBattVoltage());
   Serial.println(PMU->getBattVoltage());
 
   esp_sleep_wakeup_cause_t wakeup_reason =
@@ -87,32 +86,6 @@ void setup()
     Serial.println(F("Wakeup caused by reset"));
     delay(3000);
     setup_axp();
-
-    while(0){
-      setupDisplay();
-      delay(10000);
-    }
-
-    unsigned long t = millis();
-    setup_gps();
-    while (0)
-    {
-      axp_gps(1);
-      Serial.println("activate");
-      axp_print();
-      t = millis() + 300000;
-      t = millis() + 120000;
-      //t = millis() + 10000;
-      while (t > millis())
-        gps_loop();
-      axp_gps(0);
-      Serial.println("deactivate");
-      axp_print();
-      t = millis() + 20000;
-      while (t > millis())
-        gps_loop();
-    }
-
     end_gps();
     startup_lorawan();
     sendStatus(2, 0);

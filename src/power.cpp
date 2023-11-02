@@ -18,7 +18,7 @@ void startup_axp()
         }
         else
         {
-            Serial.println("AXP2101 PMU init succeeded, using AXP2101 PMU");
+            Serial.println("AXP2101 PMU init succeeded");
         }
     }
 
@@ -33,7 +33,7 @@ void startup_axp()
         }
         else
         {
-            Serial.println("AXP192 PMU init succeeded, using AXP192 PMU");
+            Serial.println("AXP192 PMU init succeeded");
         }
     }
 
@@ -48,13 +48,6 @@ void setup_axp()
 
     if (PMU->getChipModel() == XPOWERS_AXP192)
     {
-        // oled module power channel,
-        // disable it will cause abnormal communication between boot and AXP power supply,
-        // do not turn it off
-        PMU->setPowerChannelVoltage(XPOWERS_DCDC1, 3300);
-
-        // protected oled power source
-        // PMU->setProtectedChannel(XPOWERS_DCDC1);
         // protected esp32 power source
         PMU->setProtectedChannel(XPOWERS_DCDC3);
 
@@ -69,6 +62,13 @@ void setup_axp()
     }
     else if (PMU->getChipModel() == XPOWERS_AXP2101)
     {
+        // ESP32 VDD 3300mV
+        PMU->setProtectedChannel(XPOWERS_DCDC1);
+
+        // GNSS RTC PowerVDD 3300mV
+        PMU->setPowerChannelVoltage(XPOWERS_VBACKUP, 3300);
+        PMU->enablePowerOutput(XPOWERS_VBACKUP);
+
         // Unuse power channel
         PMU->disablePowerOutput(XPOWERS_DCDC2);
         PMU->disablePowerOutput(XPOWERS_DCDC3);
@@ -80,16 +80,6 @@ void setup_axp()
         PMU->disablePowerOutput(XPOWERS_BLDO2);
         PMU->disablePowerOutput(XPOWERS_DLDO1);
         PMU->disablePowerOutput(XPOWERS_DLDO2);
-
-        // GNSS RTC PowerVDD 3300mV
-        PMU->setPowerChannelVoltage(XPOWERS_VBACKUP, 3300);
-        PMU->enablePowerOutput(XPOWERS_VBACKUP);
-
-        // ESP32 VDD 3300mV
-        //  ! No need to set, automatically open , Don't close it
-        //  PMU->setPowerChannelVoltage(XPOWERS_DCDC1, 3300);
-        //  PMU->setProtectedChannel(XPOWERS_DCDC1);
-        PMU->setProtectedChannel(XPOWERS_DCDC1);
     }
     PMU->enableSystemVoltageMeasure();
     PMU->enableVbusVoltageMeasure();
