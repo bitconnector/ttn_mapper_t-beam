@@ -132,6 +132,7 @@ void setup_axp()
 
     axp_lora(1);
     axp_gps(1);
+    axp_display(1);
 }
 
 void axp_gps(uint8_t state)
@@ -189,6 +190,33 @@ void axp_lora(bool state)
     {
         PMU->setPowerChannelVoltage(XPOWERS_ALDO3, 3300);
         PMU->enablePowerOutput(XPOWERS_ALDO3);
+    }
+}
+
+void axp_display(bool state)
+{
+    if (state == 0) // disable LoRa
+    {
+        if (PMU->getChipModel() == XPOWERS_AXP192)
+        {
+            PMU->disablePowerOutput(XPOWERS_DCDC1);
+        }
+        else if (PMU->getChipModel() == XPOWERS_AXP2101)
+        {
+            //PMU->disablePowerOutput(XPOWERS_ALDO3);
+        }
+        return;
+    }
+
+    if (PMU->getChipModel() == XPOWERS_AXP192)
+    {
+        PMU->setPowerChannelVoltage(XPOWERS_DCDC1, 3300);
+        PMU->enablePowerOutput(XPOWERS_DCDC1);
+    }
+    else if (PMU->getChipModel() == XPOWERS_AXP2101)
+    {
+        // PMU->setPowerChannelVoltage(XPOWERS_ALDO3, 3300);
+        // PMU->enablePowerOutput(XPOWERS_ALDO3);
     }
 }
 

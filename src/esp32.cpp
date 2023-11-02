@@ -8,6 +8,7 @@ https://randomnerdtutorials.com/esp32-deep-sleep-arduino-ide-wake-up-sources/
 #include "gps.hpp"
 #include "lorawan.hpp"
 #include "power.hpp"
+#include "display.hpp"
 #include "config.hpp"
 
 unsigned int TX_INTERVAL = GPS_INTERVAL;
@@ -86,6 +87,27 @@ void setup()
     Serial.println(F("Wakeup caused by reset"));
     delay(3000);
     setup_axp();
+
+    while(1){
+      setupDisplay();
+      delay(10000);
+    }
+
+    unsigned long t = millis();
+    while (1)
+    {
+      axp_gps(1);
+      Serial.println("activate");
+      t = millis() + 6000;
+      while (t > millis())
+        gps_loop();
+      axp_gps(0);
+      Serial.println("deactivate");
+      t = millis() + 6000;
+      while (t > millis())
+        gps_loop();
+    }
+
     end_gps();
     startup_lorawan();
     sendStatus(2, 0);
