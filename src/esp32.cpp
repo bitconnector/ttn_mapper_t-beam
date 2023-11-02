@@ -8,6 +8,7 @@ https://randomnerdtutorials.com/esp32-deep-sleep-arduino-ide-wake-up-sources/
 #include "gps.hpp"
 #include "lorawan.hpp"
 #include "power.hpp"
+#include "display.hpp"
 #include "config.hpp"
 
 unsigned int TX_INTERVAL = GPS_INTERVAL;
@@ -28,7 +29,7 @@ void setup()
   digitalWrite(LED, LOW); // LED on
   startup_axp();
 
-  Serial.println(axp.getBattVoltage());
+  Serial.println(PMU->getBattVoltage());
 
   esp_sleep_wakeup_cause_t wakeup_reason =
       esp_sleep_get_wakeup_cause();
