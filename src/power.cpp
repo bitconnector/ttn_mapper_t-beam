@@ -61,16 +61,11 @@ void setup_axp()
         // disable not use channel
         PMU->disablePowerOutput(XPOWERS_DCDC2);
 
-        // disable all axp chip interrupt
-        PMU->disableIRQ(XPOWERS_AXP192_ALL_IRQ);
-
         // Set constant current charging current
         PMU->setChargerConstantCurr(XPOWERS_AXP192_CHG_CUR_450MA);
 
         // Set up the charging voltage
         PMU->setChargeTargetVoltage(XPOWERS_AXP192_CHG_VOL_4V2);
-
-        PMU->setPowerKeyPressOffTime(XPOWERS_AXP192_POWEROFF_10S);
     }
     else if (PMU->getChipModel() == XPOWERS_AXP2101)
     {
@@ -96,13 +91,13 @@ void setup_axp()
         //  PMU->setProtectedChannel(XPOWERS_DCDC1);
         PMU->setProtectedChannel(XPOWERS_DCDC1);
 
-        // LoRa VDD 3300mV
-        PMU->setPowerChannelVoltage(XPOWERS_ALDO2, 3300);
-        PMU->enablePowerOutput(XPOWERS_ALDO2);
+        // // LoRa VDD 3300mV
+        // PMU->setPowerChannelVoltage(XPOWERS_ALDO2, 3300);
+        // PMU->enablePowerOutput(XPOWERS_ALDO2);
 
-        // GNSS VDD 3300mV
-        PMU->setPowerChannelVoltage(XPOWERS_ALDO3, 3300);
-        PMU->enablePowerOutput(XPOWERS_ALDO3);
+        // // GNSS VDD 3300mV
+        // PMU->setPowerChannelVoltage(XPOWERS_ALDO3, 3300);
+        // PMU->enablePowerOutput(XPOWERS_ALDO3);
     }
     PMU->enableSystemVoltageMeasure();
     PMU->enableVbusVoltageMeasure();
@@ -141,27 +136,14 @@ void setup_axp()
 
 void axp_gps(uint8_t state)
 {
-
     if (state == 0) // disable GPS
     {
-        // if (axp.isLDO3Enable())
-        //     axp.setPowerOutPut(AXP192_LDO3, AXP202_OFF); // GPS
         if (PMU->getChipModel() == XPOWERS_AXP192)
         {
-            // gnss module power channel -  now turned on in setGpsPower
-            // PMU->setPowerChannelVoltage(XPOWERS_LDO3, 3300);
-            // PMU->enablePowerOutput(XPOWERS_LDO3);
             PMU->disablePowerOutput(XPOWERS_LDO3);
         }
         else if (PMU->getChipModel() == XPOWERS_AXP2101)
         {
-
-            /**
-             * gnss module power channel
-             * The default ALDO4 is off, you need to turn on the GNSS power first, otherwise it will be invalid during initialization
-             */
-            // PMU->setPowerChannelVoltage(XPOWERS_ALDO4, 3300);
-            // PMU->enablePowerOutput(XPOWERS_ALDO4);
             PMU->disablePowerOutput(XPOWERS_ALDO4);
         }
         return;
@@ -171,41 +153,40 @@ void axp_gps(uint8_t state)
     if (state == 2)
         voltage = 2500;
 
-    // if (!axp.isLDO3Enable())
-    //     axp.setPowerOutPut(AXP192_LDO3, AXP202_ON); // GPS
-    // if (axp.getLDO3Voltage() != voltage)
-    //     axp.setLDO3Voltage(voltage);
-
     if (PMU->getChipModel() == XPOWERS_AXP192)
     {
-        // gnss module power channel -  now turned on in setGpsPower
-        PMU->setPowerChannelVoltage(XPOWERS_LDO3, 3300);
+        PMU->setPowerChannelVoltage(XPOWERS_LDO3, voltage);
         PMU->enablePowerOutput(XPOWERS_LDO3);
     }
     else if (PMU->getChipModel() == XPOWERS_AXP2101)
     {
-        /**
-         * gnss module power channel
-         * The default ALDO4 is off, you need to turn on the GNSS power first, otherwise it will be invalid during initialization
-         */
-        PMU->setPowerChannelVoltage(XPOWERS_ALDO4, 3300);
+        PMU->setPowerChannelVoltage(XPOWERS_ALDO4, voltage);
         PMU->enablePowerOutput(XPOWERS_ALDO4);
     }
 }
 
 void axp_lora(bool state)
 {
-    // axp.setPowerOutPut(AXP192_LDO2, state); // LORA
+    if (state == 0) // disable LoRa
+    {
+        if (PMU->getChipModel() == XPOWERS_AXP192)
+        {
+            PMU->disablePowerOutput(XPOWERS_LDO2);
+        }
+        else if (PMU->getChipModel() == XPOWERS_AXP2101)
+        {
+            PMU->disablePowerOutput(XPOWERS_ALDO3);
+        }
+        return;
+    }
 
     if (PMU->getChipModel() == XPOWERS_AXP192)
     {
-        // lora radio power channel
         PMU->setPowerChannelVoltage(XPOWERS_LDO2, 3300);
         PMU->enablePowerOutput(XPOWERS_LDO2);
     }
     else if (PMU->getChipModel() == XPOWERS_AXP2101)
     {
-        // lora radio power channel
         PMU->setPowerChannelVoltage(XPOWERS_ALDO3, 3300);
         PMU->enablePowerOutput(XPOWERS_ALDO3);
     }
