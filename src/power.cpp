@@ -1,21 +1,12 @@
 #ifdef AXP
 #include "power.hpp"
 
-AXP20X_Class axp;
 XPowersLibInterface *PMU = NULL;
 bool axpIrq = 0;
 
 void startup_axp()
 {
     Wire.begin(AXP_SDA, AXP_SCL);
-    // if (!axp.begin(Wire, AXP192_SLAVE_ADDRESS))
-    // {
-    //     Serial.println("AXP192 Begin PASS");
-    // }
-    // else
-    // {
-    //     Serial.println("AXP192 Begin FAIL");
-    // }
     if (!PMU)
     {
         PMU = new XPowersAXP2101(Wire);
@@ -55,26 +46,6 @@ void setup_axp()
 {
     startup_axp();
 
-    /*
-    axp.adc1Enable(AXP202_VBUS_VOL_ADC1 | AXP202_VBUS_CUR_ADC1 |
-                       AXP202_BATT_CUR_ADC1 | AXP202_BATT_VOL_ADC1,
-                   true);
-
-    axp.setlongPressTime(2); // Long press time to 2s
-    axp.setShutdownTime(3);  // Shutdown time to 10s
-    axp.setPowerDownVoltage(3200);
-
-    axp.setLDO2Voltage(2000);  // LoRa VDD
-    axp.setLDO3Voltage(3000);  // GPS
-    axp.setDCDC3Voltage(2600); // lower ESP32 voltage
-
-    axp_gps(1);
-    axp_lora(1);
-
-    axp.enableIRQ(axp_irq_t::AXP202_ALL_IRQ, false);
-    axp.enableIRQ(AXP202_PEK_LONGPRESS_IRQ | AXP202_PEK_SHORTPRESS_IRQ | AXP202_NOE_OFF_IRQ, true);
-    axp.clearIRQ();
-    */
     if (PMU->getChipModel() == XPOWERS_AXP192)
     {
         // oled module power channel,
@@ -155,10 +126,10 @@ void setup_axp()
     else if (PMU->getChipModel() == XPOWERS_AXP2101)
     {
         pmuIrqDis = XPOWERS_AXP2101_ALL_IRQ;
-        //pmuIrqMask |= XPOWERS_AXP2101_BAT_INSERT_IRQ | XPOWERS_AXP2101_BAT_REMOVE_IRQ;      // BATTERY
-        //pmuIrqMask |= XPOWERS_AXP2101_VBUS_INSERT_IRQ | XPOWERS_AXP2101_VBUS_REMOVE_IRQ;    // VBUS
-        pmuIrqMask |= XPOWERS_AXP2101_PKEY_SHORT_IRQ | XPOWERS_AXP2101_PKEY_LONG_IRQ;       // POWER KEY
-        //pmuIrqMask |= XPOWERS_AXP2101_BAT_CHG_DONE_IRQ | XPOWERS_AXP2101_BAT_CHG_START_IRQ; // CHARGE
+        // pmuIrqMask |= XPOWERS_AXP2101_BAT_INSERT_IRQ | XPOWERS_AXP2101_BAT_REMOVE_IRQ;      // BATTERY
+        // pmuIrqMask |= XPOWERS_AXP2101_VBUS_INSERT_IRQ | XPOWERS_AXP2101_VBUS_REMOVE_IRQ;    // VBUS
+        pmuIrqMask |= XPOWERS_AXP2101_PKEY_SHORT_IRQ | XPOWERS_AXP2101_PKEY_LONG_IRQ; // POWER KEY
+        // pmuIrqMask |= XPOWERS_AXP2101_BAT_CHG_DONE_IRQ | XPOWERS_AXP2101_BAT_CHG_START_IRQ; // CHARGE
     }
     PMU->disableIRQ(pmuIrqDis);
     PMU->clearIrqStatus();
@@ -243,25 +214,6 @@ void axp_lora(bool state)
 uint8_t axp_cause()
 {
     uint8_t ret = 0;
-    /*axp.readIRQ();
-    if (axp.isPEKShortPressIRQ())
-    {
-        Serial.printf("isPEKShortPressIRQ\n");
-        ret = 1;
-    }
-    if (axp.isPEKLongtPressIRQ())
-    {
-        Serial.printf("isPEKLongtPressIRQ\n");
-        ret = 2;
-    }
-    if (axp.isNOEPowerDownIRQ())
-    {
-        Serial.printf("isNOEPowerDownIRQ\n");
-        ret = 3;
-    }
-
-    axp.clearIRQ();*/
-
     uint32_t status = PMU->getIrqStatus();
     Serial.print("STATUS => HEX:");
     Serial.print(status, HEX);
@@ -292,11 +244,6 @@ void axp_sleep()
 
 uint8_t vbatt_bin(uint8_t *txBuffer, uint8_t offset)
 {
-    /*if (axp.isBatteryConnect())
-        txBuffer[offset] = (axp.getBattVoltage() / 10) - 250;
-    else
-        txBuffer[offset] = 0xff;
-    return offset + 1;*/
     if (PMU->isBatteryConnect())
         txBuffer[offset] = (PMU->getBattVoltage() / 10) - 250;
     else

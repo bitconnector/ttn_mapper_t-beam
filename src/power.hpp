@@ -1,12 +1,10 @@
 #pragma once
 #ifdef AXP
 #include <Arduino.h>
-#include <axp20x.h>
 #include <XPowersLib.h>
 
 #include "config.hpp"
 
-extern AXP20X_Class axp;
 extern XPowersLibInterface *PMU;
 extern bool axpIrq;
 
